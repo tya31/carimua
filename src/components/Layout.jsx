@@ -1,11 +1,20 @@
-import { Link, NavLink, Outlet } from 'react-router-dom'
-import { isDemoMode } from '../lib/supabase.js'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext.js'
+import { isDemoMode, supabase } from '../lib/supabase.js'
 
 const year = new Date().getFullYear()
 
 // Kerangka yang sama di semua halaman: navbar di atas, isi halaman di tengah,
 // footer di bawah. <Outlet /> adalah tempat halaman aktif ditampilkan.
 function Layout() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    navigate('/')
+  }
+
   const navClass = ({ isActive }) =>
     isActive ? 'text-rose-600 font-semibold' : 'text-gray-600 hover:text-rose-600'
 
@@ -25,9 +34,24 @@ function Layout() {
             <NavLink to="/mua" className={navClass}>
               Cari MUA
             </NavLink>
-            <NavLink to="/login" className={navClass}>
-              Login MUA
-            </NavLink>
+            {user ? (
+              <>
+                <NavLink to="/dashboard" className={navClass}>
+                  Dashboard
+                </NavLink>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-rose-600"
+                >
+                  Keluar
+                </button>
+              </>
+            ) : (
+              <NavLink to="/login" className={navClass}>
+                Login MUA
+              </NavLink>
+            )}
           </div>
         </nav>
       </header>

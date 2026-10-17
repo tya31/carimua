@@ -1,5 +1,5 @@
 // Pilihan rentang harga. Nilainya disimpan di URL sebagai minPrice & maxPrice.
-export const PRICE_RANGES = [
+const PRICE_RANGES = [
   { label: 'Di bawah Rp500rb', minPrice: '', maxPrice: '500000' },
   { label: 'Rp500rb – Rp1jt', minPrice: '500000', maxPrice: '1000000' },
   { label: 'Rp1jt – Rp3jt', minPrice: '1000000', maxPrice: '3000000' },
