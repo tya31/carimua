@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
+import { isDemoMode } from '../lib/supabase.js'
 
 const year = new Date().getFullYear()
 
@@ -10,6 +11,11 @@ function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-rose-50 text-gray-800">
+      {isDemoMode && (
+        <div className="bg-amber-100 px-4 py-2 text-center text-xs text-amber-800">
+          Mode demo: menampilkan data dummy. Isi file <code>.env</code> untuk menghubungkan Supabase.
+        </div>
+      )}
       <header className="bg-white border-b border-rose-100">
         <nav className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
           <Link to="/" className="text-xl font-bold text-rose-600">
