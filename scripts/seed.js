@@ -10,6 +10,7 @@ import { createClient } from '@supabase/supabase-js'
 import { demoMuas } from '../src/data/demoData.js'
 
 const SEED_PASSWORD = 'carimua123'
+const DEMO_CLIENT = { email: 'klien@carimua.test', name: 'Klien Demo' }
 
 const url = process.env.VITE_SUPABASE_URL
 const secretKey = process.env.SUPABASE_SECRET_KEY
@@ -41,17 +42,24 @@ async function findUserIdByEmail(email) {
   }
 }
 
-async function getOrCreateUser(email) {
-  const existingId = await findUserIdByEmail(email)
-  if (existingId) return existingId
+// Membuat akun login (kalau belum ada) dan memastikan perannya di tabel profiles.
+async function getOrCreateUser(email, role, fullName) {
+  let id = await findUserIdByEmail(email)
 
-  const { data, error } = await supabase.auth.admin.createUser({
-    email,
-    password: SEED_PASSWORD,
-    email_confirm: true,
-  })
-  check(error, `membuat user ${email}`)
-  return data.user.id
+  if (!id) {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password: SEED_PASSWORD,
+      email_confirm: true,
+      user_metadata: { role, full_name: fullName },
+    })
+    check(error, `membuat user ${email}`)
+    id = data.user.id
+  }
+
+  const { error } = await supabase.from('profiles').upsert({ id, role, full_name: fullName })
+  check(error, `menyimpan peran ${email} (sudah menjalankan supabase/02_roles.sql?)`)
+  return id
 }
 
 const { data: categories, error: catError } = await supabase.from('categories').select('id, name')
@@ -59,7 +67,7 @@ check(catError, 'membaca kategori (sudah menjalankan supabase/schema.sql?)')
 const categoryId = Object.fromEntries(categories.map((c) => [c.name, c.id]))
 
 for (const mua of demoMuas) {
-  const id = await getOrCreateUser(mua.email)
+  const id = await getOrCreateUser(mua.email, 'mua', mua.name)
 
   const { error: profileError } = await supabase.from('mua_profiles').upsert({
     id,
@@ -96,5 +104,9 @@ for (const mua of demoMuas) {
 
   console.log(`✅ ${mua.name}  (login: ${mua.email})`)
 }
+
+// Akun klien demo (tombol "Demo Klien" di halaman login).
+await getOrCreateUser(DEMO_CLIENT.email, 'client', DEMO_CLIENT.name)
+console.log(`✅ ${DEMO_CLIENT.name}  (login: ${DEMO_CLIENT.email})`)
 
 console.log(`\nSelesai! Semua akun dummy memakai password: ${SEED_PASSWORD}`)

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useAuth } from '../auth/AuthContext.js'
+import { homeForRole, useAuth } from '../auth/AuthContext.js'
 import { isDemoMode, supabase } from '../lib/supabase.js'
 import Logo from './Logo.jsx'
 
@@ -8,14 +8,15 @@ const year = new Date().getFullYear()
 
 // Kerangka semua halaman: navbar kaca melayang, isi halaman, footer.
 function Layout() {
-  const { user } = useAuth()
+  const { user, role } = useAuth()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
 
   async function handleLogout() {
-    await supabase.auth.signOut()
+    // Pindah ke beranda dulu, supaya halaman yang wajib login tidak keburu melempar ke /login.
     setOpen(false)
     navigate('/')
+    await supabase.auth.signOut()
   }
 
   const navClass = ({ isActive }) =>
@@ -30,9 +31,11 @@ function Layout() {
       </NavLink>
       {user ? (
         <>
-          <NavLink to="/dashboard" className={navClass} onClick={() => setOpen(false)}>
-            Dashboard
-          </NavLink>
+          {role && (
+            <NavLink to={homeForRole(role)} className={navClass} onClick={() => setOpen(false)}>
+              {role === 'mua' ? 'Dashboard' : 'Akun saya'}
+            </NavLink>
+          )}
           <button type="button" onClick={handleLogout} className="rounded-full px-4 py-2 text-sm text-blush-200 hover:text-white">
             Keluar
           </button>

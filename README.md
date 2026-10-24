@@ -68,8 +68,10 @@ Buka http://localhost:5173. Tanpa `.env`, website berjalan dalam **mode demo** (
 
 ### 2. Buat tabel, RLS, dan storage
 1. Di menu kiri buka **SQL Editor**, lalu klik **New query**.
-2. Salin **seluruh isi** `supabase/schema.sql`, tempel, lalu klik **Run**.
-3. Cek di **Table Editor**: harus ada 5 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
+2. Jalankan file SQL di folder `supabase/` **berurutan**, masing-masing di query baru (salin seluruh isi, tempel, klik **Run**):
+   1. `schema.sql`: tabel MUA, paket, foto, RLS, storage
+   2. `02_roles.sql`: tabel `profiles` (peran **Klien / MUA**) + trigger akun baru
+3. Cek di **Table Editor**: harus ada 6 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
 
 ### 3. Isi file `.env`
 1. Salin `.env.example` menjadi `.env` (di folder yang sama).
@@ -83,13 +85,21 @@ Buka http://localhost:5173. Tanpa `.env`, website berjalan dalam **mode demo** (
 ```bash
 npm run seed
 ```
-Script ini membuat 8 akun MUA dummy beserta profil, paket, dan fotonya. Semua akun bisa dipakai login:
-- email: `rina@carimua.test`, `sasa@carimua.test`, `dewi@carimua.test`, … (lihat `src/data/demoData.js`)
+Script ini membuat 8 akun MUA dummy beserta profil, paket, dan fotonya, plus 1 akun klien demo. Semua akun bisa dipakai login (juga lewat tombol **Demo Klien / Demo MUA** di halaman login):
+- MUA: `rina@carimua.test`, `sasa@carimua.test`, `dewi@carimua.test`, … (lihat `src/data/demoData.js`)
+- Klien: `klien@carimua.test`
 - password: `carimua123`
 
 Nomor WhatsApp dummy sengaja memakai awalan `62800…` supaya tidak nyasar ke nomor orang sungguhan.
 
-### 5. Coba login & dashboard
+### 5. (Opsional) Login dengan Google
+1. Di https://console.cloud.google.com buat project, lalu buka **APIs & Services → Credentials → Create credentials → OAuth client ID** (tipe *Web application*).
+2. Di **Authorized redirect URIs** isi `https://<project-ref>.supabase.co/auth/v1/callback`.
+3. Salin **Client ID** & **Client secret** ke Supabase: **Authentication → Sign In / Providers → Google**, lalu aktifkan.
+
+Akun yang pertama kali login lewat Google akan diminta memilih peran (Klien / MUA) di halaman `/pilih-peran`.
+
+### 6. Coba login & dashboard
 - Login di `/login` dengan salah satu akun dummy, lalu ubah profil, paket, atau upload foto.
 - Atau klik **Daftar** untuk membuat akun baru. Secara default Supabase mengirim **email konfirmasi** dulu.
   > Catatan: email bawaan Supabase dibatasi beberapa email per jam. Untuk testing, kamu bisa mematikan konfirmasi di **Authentication → Sign In / Providers → Email → Confirm email**.
