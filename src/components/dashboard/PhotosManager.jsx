@@ -49,9 +49,9 @@ function PhotosManager({ userId, photos, onChanged }) {
 
   return (
     <section className={cardClass}>
-      <h2 className="text-lg font-semibold text-gray-900">Foto Portofolio</h2>
+      <h2 className="font-display text-4xl text-blush-50">Foto Portofolio</h2>
 
-      <form onSubmit={handleUpload} className="mt-4 grid gap-3 rounded-xl bg-rose-50/60 p-4 sm:grid-cols-2">
+      <form onSubmit={handleUpload} className="mt-4 grid gap-3 rounded-xl bg-white/5 p-4 sm:grid-cols-2">
         <label className={labelClass}>
           Pilih foto (bisa lebih dari 1, maks 5 MB/foto)
           <input
@@ -61,7 +61,7 @@ function PhotosManager({ userId, photos, onChanged }) {
             required
             accept="image/jpeg,image/png,image/webp"
             onChange={(e) => setFiles([...e.target.files])}
-            className="mt-1 block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-white file:px-4 file:py-1.5 file:text-rose-700"
+            className="mt-1 block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-wine-800 file:px-4 file:py-1.5 file:text-blush-50"
           />
         </label>
         <label className={labelClass}>
@@ -78,7 +78,7 @@ function PhotosManager({ userId, photos, onChanged }) {
             {busy ? 'Mengupload…' : 'Upload'}
           </button>
           {message && (
-            <span className={`text-sm ${message.type === 'error' ? 'text-red-600' : 'text-green-700'}`}>
+            <span className={`text-sm ${message.type === 'error' ? 'text-wine-300' : 'text-emerald-300'}`}>
               {message.text}
             </span>
           )}
@@ -86,14 +86,14 @@ function PhotosManager({ userId, photos, onChanged }) {
       </form>
 
       {photos.length === 0 ? (
-        <p className="mt-4 text-sm text-gray-500">Belum ada foto.</p>
+        <p className="mt-4 text-sm text-blush-300">Belum ada foto.</p>
       ) : (
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {photos.map((photo) => (
-            <figure key={photo.id} className="overflow-hidden rounded-xl bg-rose-50 ring-1 ring-rose-100">
+            <figure key={photo.id} className="overflow-hidden rounded-xl bg-ink-800 border border-white/10">
               <img src={photo.image_url} alt={photo.caption ?? ''} className="aspect-[3/4] w-full object-cover" />
               <figcaption className="flex items-center justify-between gap-2 p-2">
-                <span className="truncate text-xs text-gray-600">{photo.caption ?? '—'}</span>
+                <span className="truncate text-xs text-blush-200">{photo.caption ?? '—'}</span>
                 <button type="button" onClick={() => deletePhoto(photo)} className={`${dangerButton} !px-2 !py-0.5 text-xs`}>
                   Hapus
                 </button>

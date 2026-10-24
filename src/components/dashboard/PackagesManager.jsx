@@ -70,7 +70,7 @@ function PackageForm({ initial, submitLabel, onSubmit, onCancel }) {
             Batal
           </button>
         )}
-        {error && <span className="text-sm text-red-600">{error}</span>}
+        {error && <span className="text-sm text-wine-300">{error}</span>}
       </div>
     </form>
   )
@@ -101,13 +101,13 @@ function PackagesManager({ userId, packages, onChanged }) {
 
   return (
     <section className={cardClass}>
-      <h2 className="text-lg font-semibold text-gray-900">Paket & Harga</h2>
-      <p className="mt-1 text-sm text-gray-500">
+      <h2 className="font-display text-4xl text-blush-50">Paket & Harga</h2>
+      <p className="mt-1 text-sm text-blush-300">
         Kisaran harga di halaman daftar dihitung otomatis dari paket termurah dan termahal.
       </p>
 
-      <ul className="mt-4 divide-y divide-rose-100">
-        {packages.length === 0 && <li className="py-3 text-sm text-gray-500">Belum ada paket.</li>}
+      <ul className="mt-4 divide-y divide-white/10">
+        {packages.length === 0 && <li className="py-3 text-sm text-blush-300">Belum ada paket.</li>}
         {packages.map((pkg) => (
           <li key={pkg.id} className="py-4">
             {editingId === pkg.id ? (
@@ -120,10 +120,10 @@ function PackagesManager({ userId, packages, onChanged }) {
             ) : (
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-medium text-gray-900">
-                    {pkg.name} · <span className="text-rose-600">{formatRupiah(pkg.price)}</span>
+                  <p className="font-medium text-blush-50">
+                    {pkg.name} · <span className="text-wine-300">{formatRupiah(pkg.price)}</span>
                   </p>
-                  {pkg.description && <p className="mt-1 text-sm text-gray-600">{pkg.description}</p>}
+                  {pkg.description && <p className="mt-1 text-sm text-blush-200">{pkg.description}</p>}
                 </div>
                 <div className="flex gap-2">
                   <button type="button" onClick={() => setEditingId(pkg.id)} className={secondaryButton}>
@@ -139,8 +139,8 @@ function PackagesManager({ userId, packages, onChanged }) {
         ))}
       </ul>
 
-      <div className="mt-4 rounded-xl bg-rose-50/60 p-4">
-        <h3 className="mb-3 text-sm font-semibold text-gray-700">Tambah paket baru</h3>
+      <div className="mt-4 rounded-xl bg-white/5 p-4">
+        <h3 className="mb-3 text-sm font-semibold text-blush-200">Tambah paket baru</h3>
         <PackageForm initial={emptyPackage} submitLabel="Tambah paket" onSubmit={addPackage} />
       </div>
     </section>

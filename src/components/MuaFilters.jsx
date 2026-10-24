@@ -1,13 +1,20 @@
 // Pilihan rentang harga. Nilainya disimpan di URL sebagai minPrice & maxPrice.
 const PRICE_RANGES = [
-  { label: 'Di bawah Rp500rb', minPrice: '', maxPrice: '500000' },
-  { label: 'Rp500rb – Rp1jt', minPrice: '500000', maxPrice: '1000000' },
-  { label: 'Rp1jt – Rp3jt', minPrice: '1000000', maxPrice: '3000000' },
-  { label: 'Di atas Rp3jt', minPrice: '3000000', maxPrice: '' },
+  { label: '< Rp500rb', minPrice: '', maxPrice: '500000' },
+  { label: 'Rp500rb – 1jt', minPrice: '500000', maxPrice: '1000000' },
+  { label: 'Rp1jt – 3jt', minPrice: '1000000', maxPrice: '3000000' },
+  { label: '> Rp3jt', minPrice: '3000000', maxPrice: '' },
 ]
 
 const selectClass =
-  'w-full rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm focus:border-rose-400 focus:outline-none'
+  'mt-1.5 w-full appearance-none rounded-2xl border border-white/10 bg-ink-800 px-4 py-2.5 text-sm text-blush-50 focus:border-wine-400 focus:outline-none disabled:opacity-40'
+
+const chipClass = (active) =>
+  `rounded-full border px-4 py-1.5 text-sm transition ${
+    active
+      ? 'border-wine-400 bg-wine-gradient text-white shadow-lg shadow-wine-700/30'
+      : 'border-white/10 text-blush-200 hover:border-wine-400/60 hover:text-white'
+  }`
 
 // filters: objek nilai filter sekarang; onChange(patch) untuk mengubah sebagian filter.
 function MuaFilters({ filters, onChange, locations, categories }) {
@@ -18,86 +25,87 @@ function MuaFilters({ filters, onChange, locations, categories }) {
   const hasFilter = Object.values(filters).some(Boolean)
 
   return (
-    <div className="grid gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-rose-100 sm:grid-cols-2 lg:grid-cols-5">
-      <label className="text-xs font-medium text-gray-500">
-        Kota
-        <select
-          className={`${selectClass} mt-1`}
-          value={filters.city}
-          onChange={(e) => onChange({ city: e.target.value, area: '' })}
-        >
-          <option value="">Semua kota</option>
-          {locations.map((l) => (
-            <option key={l.city} value={l.city}>
-              {l.city}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label className="text-xs font-medium text-gray-500">
-        Area
-        <select
-          className={`${selectClass} mt-1 disabled:bg-gray-50 disabled:text-gray-400`}
-          value={filters.area}
-          disabled={!filters.city}
-          onChange={(e) => onChange({ area: e.target.value })}
-        >
-          <option value="">{filters.city ? 'Semua area' : 'Pilih kota dulu'}</option>
-          {areas.map((a) => (
-            <option key={a} value={a}>
-              {a}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label className="text-xs font-medium text-gray-500">
-        Kategori
-        <select
-          className={`${selectClass} mt-1`}
-          value={filters.category}
-          onChange={(e) => onChange({ category: e.target.value })}
-        >
-          <option value="">Semua kategori</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <label className="text-xs font-medium text-gray-500">
-        Budget
-        <select
-          className={`${selectClass} mt-1`}
-          value={priceIndex}
-          onChange={(e) => {
-            const range = PRICE_RANGES[e.target.value] ?? { minPrice: '', maxPrice: '' }
-            onChange({ minPrice: range.minPrice, maxPrice: range.maxPrice })
-          }}
-        >
-          <option value={-1}>Semua harga</option>
-          {PRICE_RANGES.map((r, i) => (
-            <option key={r.label} value={i}>
-              {r.label}
-            </option>
-          ))}
-        </select>
-      </label>
-
-      <div className="flex items-end">
-        <button
-          type="button"
-          disabled={!hasFilter}
-          onClick={() =>
-            onChange({ city: '', area: '', category: '', minPrice: '', maxPrice: '' })
-          }
-          className="w-full rounded-lg border border-rose-200 px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Reset filter
+    <div className="glass space-y-5 rounded-[2rem] p-5 sm:p-6">
+      {/* Kategori sebagai chip */}
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={() => onChange({ category: '' })} className={chipClass(!filters.category)}>
+          Semua ✦
         </button>
+        {categories.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            onClick={() => onChange({ category: String(c.id) })}
+            className={chipClass(filters.category === String(c.id))}
+          >
+            {c.name}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="text-xs font-medium uppercase tracking-wider text-blush-300">
+          Kota
+          <select
+            className={selectClass}
+            value={filters.city}
+            onChange={(e) => onChange({ city: e.target.value, area: '' })}
+          >
+            <option value="">Semua kota</option>
+            {locations.map((l) => (
+              <option key={l.city} value={l.city}>
+                {l.city}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="text-xs font-medium uppercase tracking-wider text-blush-300">
+          Area
+          <select
+            className={selectClass}
+            value={filters.area}
+            disabled={!filters.city}
+            onChange={(e) => onChange({ area: e.target.value })}
+          >
+            <option value="">{filters.city ? 'Semua area' : 'Pilih kota dulu'}</option>
+            {areas.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="text-xs font-medium uppercase tracking-wider text-blush-300">
+          Budget
+          <select
+            className={selectClass}
+            value={priceIndex}
+            onChange={(e) => {
+              const range = PRICE_RANGES[e.target.value] ?? { minPrice: '', maxPrice: '' }
+              onChange({ minPrice: range.minPrice, maxPrice: range.maxPrice })
+            }}
+          >
+            <option value={-1}>Semua harga</option>
+            {PRICE_RANGES.map((r, i) => (
+              <option key={r.label} value={i}>
+                {r.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div className="flex items-end">
+          <button
+            type="button"
+            disabled={!hasFilter}
+            onClick={() => onChange({ city: '', area: '', category: '', minPrice: '', maxPrice: '' })}
+            className="w-full rounded-2xl border border-white/10 px-4 py-2.5 text-sm text-blush-200 transition hover:border-wine-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            Reset filter ↺
+          </button>
+        </div>
       </div>
     </div>
   )

@@ -1,1 +1,84 @@
 @import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Tema CariMUA: hitam pekat + merah wine + blush (krem kemerahan).
+   Warna dipakai lewat kelas Tailwind, contoh: bg-wine-700, text-blush-100.
+------------------------------------------------------------------- */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Instrument Serif", Georgia, serif;
+
+  --color-ink-950: #070304;
+  --color-ink-900: #0e0607;
+  --color-ink-800: #170a0c;
+  --color-ink-700: #241013;
+  --color-ink-600: #34171b;
+
+  --color-wine-950: #2a060b;
+  --color-wine-900: #3f0a11;
+  --color-wine-800: #5c0e18;
+  --color-wine-700: #7d1421;
+  --color-wine-600: #a01b2b;
+  --color-wine-500: #c42638;
+  --color-wine-400: #e2485a;
+  --color-wine-300: #f07b88;
+
+  --color-blush-50: #fdf4f2;
+  --color-blush-100: #f7e5e0;
+  --color-blush-200: #ecc9c1;
+  --color-blush-300: #d8a49a;
+  --color-blush-400: #b98077;
+
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-ink-950);
+  color: var(--color-blush-100);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-wine-500);
+  color: white;
+}
+
+/* Kartu kaca semi-transparan */
+@utility glass {
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  backdrop-filter: blur(16px);
+}
+
+/* Pola titik-titik halftone seperti referensi */
+@utility halftone {
+  background-image: radial-gradient(rgb(226 72 90 / 0.35) 1.2px, transparent 1.4px);
+  background-size: 10px 10px;
+}
+
+/* Gradasi merah utama untuk tombol & aksen */
+@utility bg-wine-gradient {
+  background-image: linear-gradient(135deg, var(--color-wine-500), var(--color-wine-800));
+}
+
+/* Teks bergradasi */
+@utility text-gradient {
+  background-image: linear-gradient(120deg, var(--color-blush-50), var(--color-wine-300) 60%, var(--color-wine-400));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

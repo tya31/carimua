@@ -1,67 +1,108 @@
+import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
 import { isDemoMode, supabase } from '../lib/supabase.js'
+import Logo from './Logo.jsx'
 
 const year = new Date().getFullYear()
 
-// Kerangka yang sama di semua halaman: navbar di atas, isi halaman di tengah,
-// footer di bawah. <Outlet /> adalah tempat halaman aktif ditampilkan.
+// Kerangka semua halaman: navbar kaca melayang, isi halaman, footer.
 function Layout() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const [open, setOpen] = useState(false)
 
   async function handleLogout() {
     await supabase.auth.signOut()
+    setOpen(false)
     navigate('/')
   }
 
   const navClass = ({ isActive }) =>
-    isActive ? 'text-rose-600 font-semibold' : 'text-gray-600 hover:text-rose-600'
+    `rounded-full px-4 py-2 text-sm transition ${
+      isActive ? 'bg-white/10 text-white' : 'text-blush-200 hover:text-white'
+    }`
+
+  const links = (
+    <>
+      <NavLink to="/mua" className={navClass} onClick={() => setOpen(false)}>
+        Cari MUA
+      </NavLink>
+      {user ? (
+        <>
+          <NavLink to="/dashboard" className={navClass} onClick={() => setOpen(false)}>
+            Dashboard
+          </NavLink>
+          <button type="button" onClick={handleLogout} className="rounded-full px-4 py-2 text-sm text-blush-200 hover:text-white">
+            Keluar
+          </button>
+        </>
+      ) : (
+        <Link
+          to="/login"
+          onClick={() => setOpen(false)}
+          className="rounded-full bg-wine-gradient px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-wine-700/40 transition hover:brightness-110"
+        >
+          Masuk
+        </Link>
+      )}
+    </>
+  )
 
   return (
-    <div className="min-h-screen flex flex-col bg-rose-50 text-gray-800">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip">
+      {/* Cahaya merah samar di latar belakang */}
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-wine-700/25 blur-[120px]" />
+
       {isDemoMode && (
-        <div className="bg-amber-100 px-4 py-2 text-center text-xs text-amber-800">
+        <div className="relative z-10 bg-amber-400/90 px-4 py-2 text-center text-xs font-medium text-ink-950">
           Mode demo: menampilkan data dummy. Isi file <code>.env</code> untuk menghubungkan Supabase.
         </div>
       )}
-      <header className="bg-white border-b border-rose-100">
-        <nav className="mx-auto max-w-6xl px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="text-xl font-bold text-rose-600">
-            CariMUA
+
+      <header className="sticky top-0 z-40 px-4 pt-4">
+        <nav className="glass mx-auto flex max-w-6xl items-center justify-between rounded-full py-2 pl-6 pr-2">
+          <Link to="/" onClick={() => setOpen(false)}>
+            <Logo />
           </Link>
-          <div className="flex items-center gap-6 text-sm">
-            <NavLink to="/mua" className={navClass}>
-              Cari MUA
-            </NavLink>
-            {user ? (
-              <>
-                <NavLink to="/dashboard" className={navClass}>
-                  Dashboard
-                </NavLink>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="text-gray-600 hover:text-rose-600"
-                >
-                  Keluar
-                </button>
-              </>
-            ) : (
-              <NavLink to="/login" className={navClass}>
-                Login MUA
-              </NavLink>
-            )}
-          </div>
+          <div className="hidden items-center gap-1 sm:flex">{links}</div>
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            className="rounded-full px-4 py-2 text-sm text-blush-100 sm:hidden"
+            aria-expanded={open}
+            aria-label="Menu"
+          >
+            {open ? '✕' : '☰'}
+          </button>
         </nav>
+        {open && (
+          <div className="glass mx-auto mt-2 flex max-w-6xl flex-col items-stretch gap-1 rounded-3xl p-3 sm:hidden">
+            {links}
+          </div>
+        )}
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-8">
+      <main className="relative z-10 flex-1">
         <Outlet />
       </main>
 
-      <footer className="border-t border-rose-100 bg-white py-6 text-center text-sm text-gray-500">
-        © {year} CariMUA
+      <footer className="relative z-10 mt-24 border-t border-white/5 px-4 pb-10 pt-16">
+        <div className="mx-auto flex max-w-6xl flex-col gap-10 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="font-display text-5xl leading-none text-blush-50 sm:text-7xl">
+              find your <span className="italic text-gradient">glam.</span>
+            </p>
+            <p className="mt-4 max-w-sm text-sm text-blush-300">
+              Platform buat nemuin makeup artist yang vibes-nya cocok sama kamu.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 text-sm text-blush-200 sm:items-end">
+            <Link to="/mua" className="hover:text-white">Cari MUA</Link>
+            <Link to="/login" className="hover:text-white">Gabung jadi MUA</Link>
+            <span className="mt-4 text-xs text-blush-400">© {year} CariMUA</span>
+          </div>
+        </div>
       </footer>
     </div>
   )

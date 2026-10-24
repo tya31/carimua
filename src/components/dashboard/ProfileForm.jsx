@@ -84,9 +84,9 @@ function ProfileForm({ userId, profile, categories, categoryIds, onSaved }) {
 
   return (
     <form onSubmit={handleSubmit} className={cardClass}>
-      <h2 className="text-lg font-semibold text-gray-900">Profil</h2>
+      <h2 className="font-display text-4xl text-blush-50">Profil</h2>
       {!profile && (
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-blush-300">
           Lengkapi profilmu dulu. Setelah disimpan, kamu bisa menambah paket dan foto portofolio.
         </p>
       )}
@@ -117,7 +117,7 @@ function ProfileForm({ userId, profile, categories, categoryIds, onSaved }) {
             }}
             className={inputClass}
           />
-          <span className="mt-1 block text-xs text-gray-400">/mua/{form.slug || '…'}</span>
+          <span className="mt-1 block text-xs text-blush-400">/mua/{form.slug || '…'}</span>
         </label>
         <label className={labelClass}>
           Kota *
@@ -143,7 +143,7 @@ function ProfileForm({ userId, profile, categories, categoryIds, onSaved }) {
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={(e) => setAvatarFile(e.target.files[0] ?? null)}
-            className="mt-1 block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-rose-50 file:px-4 file:py-1.5 file:text-rose-700"
+            className="mt-1 block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-wine-800 file:px-4 file:py-1.5 file:text-blush-50"
           />
         </label>
       </div>
@@ -161,8 +161,8 @@ function ProfileForm({ userId, profile, categories, categoryIds, onSaved }) {
               key={c.id}
               className={`cursor-pointer rounded-full border px-3 py-1 text-sm ${
                 selected.includes(c.id)
-                  ? 'border-rose-500 bg-rose-500 text-white'
-                  : 'border-rose-200 text-gray-600 hover:bg-rose-50'
+                  ? 'border-wine-400 bg-wine-gradient text-white'
+                  : 'border-white/15 text-blush-200 hover:bg-white/5'
               }`}
             >
               <input
@@ -182,7 +182,7 @@ function ProfileForm({ userId, profile, categories, categoryIds, onSaved }) {
           {busy ? 'Menyimpan…' : 'Simpan profil'}
         </button>
         {message && (
-          <span className={`text-sm ${message.type === 'error' ? 'text-red-600' : 'text-green-700'}`}>
+          <span className={`text-sm ${message.type === 'error' ? 'text-wine-300' : 'text-emerald-300'}`}>
             {message.text}
           </span>
         )}

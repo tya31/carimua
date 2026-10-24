@@ -46,20 +46,30 @@ function Dashboard() {
     }
   }, [user.id, version])
 
-  if (error) return <p className="text-red-600">Gagal memuat dashboard: {error.message}</p>
-  if (!data) return <p className="text-gray-500">Memuat…</p>
+  if (error) return <p className="text-wine-300">Gagal memuat dashboard: {error.message}</p>
+  if (!data) return <p className="text-blush-300">Memuat…</p>
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard MUA</h1>
-          <p className="text-sm text-gray-500">Login sebagai {user.email}</p>
-        </div>
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-wine-800 via-wine-900 to-ink-900 p-7 sm:p-10">
+        <div className="halftone absolute -right-10 -top-10 h-56 w-56 rounded-full opacity-40" />
+        <p className="text-xs uppercase tracking-[0.3em] text-wine-300">dashboard</p>
+        <h1 className="mt-2 font-display text-5xl text-blush-50 sm:text-6xl">
+          hi, <span className="italic">{data.profile?.name.split(' ')[0] ?? 'gorgeous'}</span> ✦
+        </h1>
+        <p className="mt-2 text-sm text-blush-300">Login sebagai {user.email}</p>
         {data.profile && (
-          <Link to={`/mua/${data.profile.slug}`} className="text-sm font-semibold text-rose-600 hover:underline">
-            Lihat profil publik →
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              to={`/mua/${data.profile.slug}`}
+              className="rounded-full bg-blush-50 px-5 py-2.5 text-sm font-semibold text-ink-950 transition hover:bg-white"
+            >
+              Lihat profil publik →
+            </Link>
+            <span className="glass rounded-full px-5 py-2.5 text-sm text-blush-200">
+              {data.packages.length} paket · {data.photos.length} foto
+            </span>
+          </div>
         )}
       </div>
 

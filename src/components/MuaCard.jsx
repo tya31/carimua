@@ -5,33 +5,38 @@ function MuaCard({ mua }) {
   return (
     <Link
       to={`/mua/${mua.slug}`}
-      className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-rose-100 transition hover:-translate-y-0.5 hover:shadow-md"
+      className="group relative block overflow-hidden rounded-3xl border border-white/10 bg-ink-800 transition duration-300 hover:-translate-y-1 hover:border-wine-400/60 hover:shadow-2xl hover:shadow-wine-700/30"
     >
-      <div className="aspect-square overflow-hidden bg-rose-100">
+      <div className="relative aspect-[4/5] overflow-hidden">
         {mua.avatar_url ? (
           <img
             src={mua.avatar_url}
             alt={mua.name}
             loading="lazy"
-            className="h-full w-full object-cover transition group-hover:scale-105"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-5xl font-bold text-rose-300">
+          <div className="halftone flex h-full items-center justify-center bg-wine-900 font-display text-7xl text-blush-100">
             {mua.name.charAt(0)}
           </div>
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent" />
+
+        <span className="glass absolute right-3 top-3 rounded-full px-3 py-1 text-[11px] text-blush-50">
+          📍 {mua.city}
+        </span>
+
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <h2 className="font-display text-3xl leading-tight text-blush-50">{mua.name}</h2>
+          {mua.area && <p className="text-xs text-blush-300">{mua.area}</p>}
+        </div>
       </div>
-      <div className="p-4">
-        <h2 className="font-semibold text-gray-900">{mua.name}</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          📍 {mua.area ? `${mua.area}, ${mua.city}` : mua.city}
-        </p>
-        <p className="mt-2 text-sm font-semibold text-rose-600">
-          {formatPriceRange(mua.min_price, mua.max_price)}
-        </p>
-        <div className="mt-3 flex flex-wrap gap-1.5">
+
+      <div className="space-y-3 p-4">
+        <p className="text-sm font-semibold text-wine-300">{formatPriceRange(mua.min_price, mua.max_price)}</p>
+        <div className="flex flex-wrap gap-1.5">
           {mua.category_names.map((name) => (
-            <span key={name} className="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs text-rose-700">
+            <span key={name} className="rounded-full border border-white/10 px-2.5 py-0.5 text-[11px] text-blush-200">
               {name}
             </span>
           ))}
