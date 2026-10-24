@@ -103,6 +103,8 @@ function Layout() {
           <div className="flex flex-col gap-2 text-sm text-blush-200 sm:items-end">
             <Link to="/mua" className="hover:text-white">Cari MUA</Link>
             <Link to="/login" className="hover:text-white">Gabung jadi MUA</Link>
+            <Link to="/privasi" className="hover:text-white">Kebijakan Privasi</Link>
+            <Link to="/syarat" className="hover:text-white">Syarat Layanan</Link>
             <span className="mt-4 text-xs text-blush-400">© {year} CariMUA</span>
           </div>
         </div>

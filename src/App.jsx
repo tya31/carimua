@@ -6,6 +6,7 @@ import ChooseRole from './pages/ChooseRole.jsx'
 import ClientHome from './pages/ClientHome.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Home from './pages/Home.jsx'
+import Legal from './pages/Legal.jsx'
 import Login from './pages/Login.jsx'
 import MuaList from './pages/MuaList.jsx'
 import MuaProfile from './pages/MuaProfile.jsx'
@@ -53,6 +54,8 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route path="/privasi" element={<Legal kind="privacy" />} />
+          <Route path="/syarat" element={<Legal kind="terms" />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Route>
