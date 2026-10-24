@@ -2,6 +2,8 @@
 
 Platform pencarian **Makeup Artist (MUA)**. Pengunjung bisa mencari MUA berdasarkan kota/area, kategori, dan budget, melihat portofolio dan paket harga, lalu menghubungi MUA langsung via WhatsApp. MUA bisa login untuk mengelola profil, paket, dan foto portofolionya sendiri.
 
+🔗 **Demo:** https://carimua-nine.vercel.app
+
 **Stack:** React 19 (Vite) · Tailwind CSS v4 · React Router v7 · Supabase (Postgres, Auth, Storage, Row Level Security)
 
 ## Fitur
