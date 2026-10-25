@@ -75,7 +75,8 @@ Buka http://localhost:5173. Tanpa `.env`, website berjalan dalam **mode demo** (
    4. `04_bookings.sql`: lokasi & tarif transport MUA, tabel `bookings`, harga/jarak/DP 5% dihitung di server (trigger), 1 jadwal per hari per MUA
    5. `05_payments.sql`: tabel `payments` (riwayat transaksi DP), hanya bisa ditulis server
    6. `06_chat.sql`: chat realtime klien ↔ MUA (`conversations`, `messages`, status dibaca, Supabase Realtime)
-3. Cek di **Table Editor**: harus ada 11 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
+   7. `07_notifications.sql`: notifikasi di web (lonceng), trigger status booking, pg_cron: pengingat H-2 setiap 08.00 WIB & pembatalan otomatis booking yang tidak dibayar DP dalam 24 jam
+3. Cek di **Table Editor**: harus ada 12 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
 
 > **Ongkos transport:** jarak dihitung dengan rumus haversine (garis lurus) × 1.3 sebagai perkiraan jarak tempuh. Ongkos = (jarak − km gratis, dibulatkan ke atas) × tarif per km yang diatur MUA. Peta memakai OpenStreetMap/CARTO dan pencarian alamat memakai Nominatim (gratis, tanpa API key).
 
@@ -119,7 +120,14 @@ Alur: klien klik **Bayar DP** → Edge Function `payments` membuat transaksi Sna
 5. Di Midtrans **Settings → Payment → Notification URL** isi `https://<project-ref>.supabase.co/functions/v1/midtrans-webhook`.
 6. Tes bayar: pilih **BCA Virtual Account** di pop-up, lalu bayar nomor VA-nya di https://simulator.sandbox.midtrans.com/bca/va/index (uang simulasi).
 
-### 7. Coba login & dashboard
+### 7. Email pengingat H-2 (Resend)
+1. Daftar di https://resend.com → **API Keys → Create API Key** (Sending access).
+2. Simpan di Supabase **Edge Functions → Secrets** sebagai `RESEND_API_KEY`.
+3. Deploy function: `npx supabase functions deploy send-reminders --project-ref <project-ref> --no-verify-jwt --use-api`
+
+> Tanpa domain sendiri, Resend hanya mengirim dari `onboarding@resend.dev` **ke email pemilik akun Resend**. Untuk mengirim ke semua pengguna: verifikasi domain di Resend, lalu isi secret `EMAIL_FROM` (contoh `CariMUA <halo@domainkamu.com>`). Notifikasi di web tetap jalan untuk semua pengguna tanpa batasan ini.
+
+### 8. Coba login & dashboard
 - Login di `/login` dengan salah satu akun dummy, lalu ubah profil, paket, atau upload foto.
 - Atau klik **Daftar** untuk membuat akun baru. Secara default Supabase mengirim **email konfirmasi** dulu.
   > Catatan: email bawaan Supabase dibatasi beberapa email per jam. Untuk testing, kamu bisa mematikan konfirmasi di **Authentication → Sign In / Providers → Email → Confirm email**.

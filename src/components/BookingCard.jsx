@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BOOKING_STATUS, formatDate, formatTime } from '../lib/bookings.js'
+import { BOOKING_STATUS, formatDate, formatTime, googleCalendarLink } from '../lib/bookings.js'
 import { formatRupiah } from '../lib/format.js'
 import { formatPaymentType } from '../lib/payments.js'
 import StartChatButton from './chat/StartChatButton.jsx'
@@ -67,6 +67,19 @@ function BookingCard({ booking, viewer, actions }) {
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {actions}
+        {['pending_payment', 'confirmed'].includes(booking.status) && (
+          <a
+            href={googleCalendarLink(
+              booking,
+              viewer === 'client' ? `Makeup bareng ${other.name}` : `Makeup klien ${other.name}`,
+            )}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400"
+          >
+            📅 Google Calendar
+          </a>
+        )}
         <StartChatButton
           otherId={viewer === 'client' ? booking.mua_id : booking.client_id}
           className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400 disabled:opacity-50"

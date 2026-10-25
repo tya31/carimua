@@ -4,6 +4,7 @@ import { homeForRole, useAuth } from '../auth/AuthContext.js'
 import { isDemoMode, supabase } from '../lib/supabase.js'
 import { useUnreadCount } from './chat/useUnreadCount.js'
 import Logo from './Logo.jsx'
+import NotificationBell from './NotificationBell.jsx'
 
 const year = new Date().getFullYear()
 
@@ -80,16 +81,19 @@ function Layout() {
           <Link to="/" onClick={() => setOpen(false)}>
             <Logo />
           </Link>
-          <div className="hidden items-center gap-1 sm:flex">{links}</div>
-          <button
-            type="button"
-            onClick={() => setOpen(!open)}
-            className="rounded-full px-4 py-2 text-sm text-blush-100 sm:hidden"
-            aria-expanded={open}
-            aria-label="Menu"
-          >
-            {open ? '✕' : '☰'}
-          </button>
+          <div className="flex items-center gap-1">
+            <div className="hidden items-center gap-1 sm:flex">{links}</div>
+            {user && role && <NotificationBell userId={user.id} />}
+            <button
+              type="button"
+              onClick={() => setOpen(!open)}
+              className="rounded-full px-4 py-2 text-sm text-blush-100 sm:hidden"
+              aria-expanded={open}
+              aria-label="Menu"
+            >
+              {open ? '✕' : '☰'}
+            </button>
+          </div>
         </nav>
         {open && (
           <div className="glass mx-auto mt-2 flex max-w-6xl flex-col items-stretch gap-1 rounded-3xl p-3 sm:hidden">

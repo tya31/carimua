@@ -8,3 +8,7 @@ verify_jwt = false
 # Dipanggil server Midtrans (tanpa token Supabase); keamanan lewat signature SHA-512.
 [functions.midtrans-webhook]
 verify_jwt = false
+
+# Dipanggil pg_cron. Aman dipanggil siapa pun: hanya mengirim pengingat yang memang jatuh tempo, tanpa duplikat.
+[functions.send-reminders]
+verify_jwt = false

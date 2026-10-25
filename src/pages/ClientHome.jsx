@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
+import BookingCalendar from '../components/BookingCalendar.jsx'
 import BookingCard from '../components/BookingCard.jsx'
+import { daysUntil, formatDate, formatTime, googleCalendarLink, todayIso } from '../lib/bookings.js'
 import PaymentHistory from '../components/PaymentHistory.jsx'
 import { payDp, paymentsEnabled, syncPayment } from '../lib/payments.js'
 import { supabase } from '../lib/supabase.js'
-
-// Fitur yang menyusul di fase berikutnya.
-const UPCOMING = [
-  { emoji: '🔔', title: 'Pengingat H-2', text: 'Notifikasi & email 2 hari sebelum jadwal.' },
-]
 
 const neutralButton =
   'rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400 disabled:opacity-50'
@@ -42,6 +39,13 @@ function ClientHome() {
       ignore = true
     }
   }, [user.id, version])
+
+  // Jadwal aktif terdekat (terkonfirmasi / menunggu DP) untuk banner pengingat.
+  const today = todayIso()
+  const nextBooking = (bookings ?? [])
+    .filter((b) => b.event_date >= today && ['confirmed', 'pending_payment'].includes(b.status))
+    .sort((a, b) => a.event_date.localeCompare(b.event_date))[0]
+  const nextIn = nextBooking ? daysUntil(nextBooking.event_date) : null
 
   async function pay(booking) {
     setError(null)
@@ -99,6 +103,34 @@ function ClientHome() {
         </p>
       )}
 
+      {nextBooking && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[2rem] border border-wine-400/40 bg-wine-900/40 p-5">
+          <div>
+            <p className="text-xs uppercase tracking-[0.25em] text-wine-300">
+              {nextIn === 0 ? 'hari ini' : nextIn === 1 ? 'besok' : `${nextIn} hari lagi`}
+            </p>
+            <p className="mt-1 font-display text-3xl text-blush-50">
+              {nextBooking.package_name} · {nextBooking.mua_profiles?.name}
+            </p>
+            <p className="text-sm text-blush-300">
+              {formatDate(nextBooking.event_date)}, jam {formatTime(nextBooking.event_time)}
+            </p>
+          </div>
+          <a
+            href={googleCalendarLink(nextBooking, `Makeup bareng ${nextBooking.mua_profiles?.name}`)}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-full bg-blush-50 px-5 py-2.5 text-sm font-semibold text-ink-950 transition hover:bg-white"
+          >
+            📅 Simpan ke Google Calendar
+          </a>
+        </div>
+      )}
+
+      {bookings && bookings.length > 0 && (
+        <BookingCalendar bookings={bookings} nameOf={(b) => `MUA: ${b.mua_profiles?.name ?? '-'}`} />
+      )}
+
       <section className="rounded-[2rem] border border-white/10 bg-ink-900/80 p-6 sm:p-8">
         <h2 className="font-display text-4xl text-blush-50">Booking kamu</h2>
         {error && <p className="mt-3 text-sm text-wine-300">{error}</p>}
@@ -148,18 +180,6 @@ function ClientHome() {
 
       {bookings && bookings.length > 0 && <PaymentHistory bookings={bookings} />}
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {UPCOMING.map((item) => (
-          <div key={item.title} className="rounded-[2rem] border border-white/10 bg-ink-900/80 p-6">
-            <span className="text-3xl">{item.emoji}</span>
-            <p className="mt-3 font-display text-3xl text-blush-50">{item.title}</p>
-            <p className="mt-1 text-sm text-blush-300">{item.text}</p>
-            <span className="mt-4 inline-block rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-widest text-blush-400">
-              segera hadir
-            </span>
-          </div>
-        ))}
-      </div>
     </div>
   )
 }

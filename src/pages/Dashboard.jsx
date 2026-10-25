@@ -8,6 +8,7 @@ import PackagesManager from '../components/dashboard/PackagesManager.jsx'
 import ProfileForm from '../components/dashboard/ProfileForm.jsx'
 import TransportSettings from '../components/dashboard/TransportSettings.jsx'
 import { MIN_LOOKS } from '../components/dashboard/ui.js'
+import BookingCalendar from '../components/BookingCalendar.jsx'
 import PaymentHistory from '../components/PaymentHistory.jsx'
 import { normalizeLook } from '../lib/api.js'
 import { supabase } from '../lib/supabase.js'
@@ -90,6 +91,10 @@ function Dashboard() {
           </div>
         )}
       </div>
+
+      {data.bookings.length > 0 && (
+        <BookingCalendar bookings={data.bookings} nameOf={(b) => `Klien: ${b.profiles?.full_name ?? '-'}`} />
+      )}
 
       {data.profile && <IncomingBookings bookings={data.bookings} onChanged={reload} />}
 
