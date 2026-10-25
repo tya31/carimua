@@ -14,9 +14,9 @@ const SERVICES = [
 const MARQUEE = ['Wedding', 'Wisuda', 'Lamaran', 'Party', 'Photoshoot', 'Hijab', 'Soft glam', 'Bold look']
 
 const STEPS = [
-  { no: '01', title: 'Cari & filter', text: 'Pilih kota, kategori, dan budget. Langsung kelihatan MUA yang cocok.' },
-  { no: '02', title: 'Cek portofolio', text: 'Lihat hasil makeup asli, paket, dan kisaran harganya.' },
-  { no: '03', title: 'Hubungi MUA', text: 'Satu klik ke WhatsApp MUA, tanya-tanya, lalu deal.' },
+  { no: '01', title: 'Cari & cek look', text: 'Filter kota, kategori, dan budget. Lihat look asli, model, sampai produk yang dipakai.' },
+  { no: '02', title: 'Booking & DP 5%', text: 'Pilih paket, tanggal, dan lokasi. Ongkos transport dihitung otomatis dari jarak.' },
+  { no: '03', title: 'Chat & tinggal glow', text: 'Ngobrol langsung sama MUA-nya. H-2 kamu diingetin, biar nggak lupa.' },
 ]
 
 function Home() {
@@ -60,9 +60,9 @@ function Home() {
             </Link>
           </div>
           <div className="mt-10 flex flex-wrap gap-6 text-sm text-blush-300">
-            <span>✓ Portofolio asli</span>
-            <span>✓ Harga transparan</span>
-            <span>✓ Langsung ke MUA</span>
+            <span>✓ Ongkos transport otomatis</span>
+            <span>✓ DP cuma 5%</span>
+            <span>✓ Pengingat H-2</span>
           </div>
         </div>
 
@@ -196,7 +196,8 @@ function Home() {
             <span className="italic text-gradient">show your art.</span>
           </h2>
           <p className="mt-6 max-w-md text-blush-200">
-            Bikin profil sekali, pajang portofolio & paket harga, terus dapet link rapi buat ditaruh di bio Instagram.
+            Pajang look & video, atur paket dan tarif transport, terima booking + DP, chat sama klien, dan dapet link rapi
+            (plus QR) buat bio Instagram.
           </p>
           <Link
             to="/login"

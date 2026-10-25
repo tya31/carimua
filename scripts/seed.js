@@ -3,8 +3,9 @@
 //
 // Untuk setiap MUA dummy, script ini:
 // 1. membuat akun login (email di demoData.js, password = SEED_PASSWORD di bawah),
-// 2. mengisi profil, kategori, paket, dan foto portofolionya.
-// Aman dijalankan berulang kali: data MUA dummy lama ditimpa, bukan diduplikasi.
+// 2. mengisi profil, kategori, paket, lokasi/tarif transport, dan look portofolionya.
+// Lalu untuk akun Klien Demo: contoh booking, riwayat DP, dan chat.
+// Aman dijalankan berulang kali: data dummy lama ditimpa, bukan diduplikasi.
 
 import { createClient } from '@supabase/supabase-js'
 import { demoMuas, demoTransport } from '../src/data/demoData.js'
@@ -117,7 +118,87 @@ for (const mua of demoMuas) {
 }
 
 // Akun klien demo (tombol "Demo Klien" di halaman login).
-await getOrCreateUser(DEMO_CLIENT.email, 'client', DEMO_CLIENT.name)
+const clientId = await getOrCreateUser(DEMO_CLIENT.email, 'client', DEMO_CLIENT.name)
 console.log(`✅ ${DEMO_CLIENT.name}  (login: ${DEMO_CLIENT.email})`)
+
+// ---------------------------------------------------------------------------
+// Aktivitas demo untuk Klien Demo: booking, riwayat DP, dan chat,
+// supaya pengunjung portofolio langsung melihat fitur yang "hidup".
+// ---------------------------------------------------------------------------
+const muaIdBySlug = {}
+for (const mua of demoMuas) muaIdBySlug[mua.slug] = await findUserIdByEmail(mua.email)
+
+// Bersihkan aktivitas demo lama (payments & notifikasi ikut terhapus lewat cascade).
+check((await supabase.from('bookings').delete().eq('client_id', clientId)).error, 'membersihkan booking demo')
+check((await supabase.from('conversations').delete().eq('client_id', clientId)).error, 'membersihkan chat demo')
+
+// Booking dibuat SEBAGAI Klien Demo (bukan secret key), karena harga, jarak, dan DP
+// dihitung trigger di server berdasarkan user yang login.
+const clientApi = createClient(url, process.env.VITE_SUPABASE_PUBLISHABLE_KEY, { auth: { persistSession: false } })
+check((await clientApi.auth.signInWithPassword({ email: DEMO_CLIENT.email, password: SEED_PASSWORD })).error, 'login Klien Demo')
+
+const daysFromNow = (n) => {
+  const d = new Date(Date.now() + 7 * 3600 * 1000) // WIB
+  d.setUTCDate(d.getUTCDate() + n)
+  return d.toISOString().slice(0, 10)
+}
+
+const DEMO_BOOKINGS = [
+  { slug: 'rina-makeup', days: 12, time: '07:00', address: 'Gedung Sate, Jl. Diponegoro, Bandung', lat: -6.9025, lng: 107.6188, paidVia: 'qris', status: 'confirmed' },
+  { slug: 'sasa-beauty', days: 30, time: '10:00', address: 'Universitas Indonesia, Depok', lat: -6.3606, lng: 106.8272, paidVia: 'bank_transfer', status: 'confirmed' },
+  { slug: 'nadia-mua', days: 18, time: '13:00', address: 'Rawamangun, Jakarta Timur', lat: -6.1946, lng: 106.8915, status: 'cancelled' },
+]
+
+for (const demo of DEMO_BOOKINGS) {
+  const muaId = muaIdBySlug[demo.slug]
+  const { data: pkg } = await supabase.from('packages').select('id').eq('mua_id', muaId).order('price').limit(1).single()
+  const { data: booking, error } = await clientApi
+    .from('bookings')
+    .insert({ mua_id: muaId, package_id: pkg.id, event_date: daysFromNow(demo.days), event_time: demo.time, address: demo.address, lat: demo.lat, lng: demo.lng })
+    .select('id, dp_amount')
+    .single()
+  check(error, `membuat booking demo ${demo.slug} (sudah menjalankan supabase/04_bookings.sql?)`)
+
+  if (demo.paidVia) {
+    check(
+      (await supabase.from('payments').insert({
+        booking_id: booking.id,
+        order_id: `DEMO-${booking.id.slice(0, 8)}`,
+        amount: booking.dp_amount,
+        status: 'paid',
+        payment_type: demo.paidVia,
+        midtrans_status: 'settlement',
+        paid_at: new Date().toISOString(),
+      })).error,
+      'mencatat pembayaran demo',
+    )
+  }
+  check((await supabase.from('bookings').update({ status: demo.status }).eq('id', booking.id)).error, 'mengubah status booking demo')
+}
+
+// Chat demo Klien Demo ↔ Rina (pesan terakhir sengaja belum dibaca Rina → badge muncul di akun Demo MUA).
+const { data: convId, error: convError } = await clientApi.rpc('start_conversation', { p_other: muaIdBySlug['rina-makeup'] })
+check(convError, 'membuat chat demo (sudah menjalankan supabase/06_chat.sql?)')
+const t0 = Date.now() - 60 * 60 * 1000
+const chat = [
+  [clientId, 'Halo kak Rina! Paket lamaran sudah termasuk hijab do belum? 🥹'],
+  [muaIdBySlug['rina-makeup'], 'Halo kak 🤍 sudah termasuk hijab do + bulu mata ya.'],
+  [clientId, 'Oke kak, aku booking akad aja deh. DP-nya udah aku bayar ✨'],
+  [muaIdBySlug['rina-makeup'], 'Siap, sudah masuk! Nanti H-2 aku kabari lagi ya kak 💄'],
+  [clientId, 'Makasih kak, ditunggu!'],
+]
+check(
+  (await supabase.from('messages').insert(
+    chat.map(([sender, body], i) => ({
+      conversation_id: convId,
+      sender_id: sender,
+      body,
+      created_at: new Date(t0 + i * 4 * 60 * 1000).toISOString(),
+      read_at: i < chat.length - 1 ? new Date(t0 + i * 4 * 60 * 1000 + 60000).toISOString() : null,
+    })),
+  )).error,
+  'mengisi chat demo',
+)
+console.log('✅ Aktivitas demo: 3 booking (2 lunas, 1 batal), riwayat DP, dan chat dengan Rina')
 
 console.log(`\nSelesai! Semua akun dummy memakai password: ${SEED_PASSWORD}`)

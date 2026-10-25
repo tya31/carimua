@@ -13,9 +13,22 @@ export const PAYMENT_STATUS = {
   failed: { label: 'Gagal', className: 'text-wine-300' },
 }
 
-// "bank_transfer" → "Bank Transfer"
+// Nama metode bayar dari Midtrans → label yang enak dibaca.
+const PAYMENT_TYPE_LABELS = {
+  qris: 'QRIS',
+  gopay: 'GoPay',
+  shopeepay: 'ShopeePay',
+  bank_transfer: 'Transfer Bank (VA)',
+  echannel: 'Mandiri Bill',
+  permata: 'Permata VA',
+  cstore: 'Alfamart / Indomaret',
+  credit_card: 'Kartu Kredit',
+  akulaku: 'Akulaku',
+  kredivo: 'Kredivo',
+}
+
 export const formatPaymentType = (type) =>
-  type ? type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) : '—'
+  type ? (PAYMENT_TYPE_LABELS[type] ?? type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())) : '—'
 
 let snapPromise = null
 function loadSnap() {

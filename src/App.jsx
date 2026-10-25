@@ -1,18 +1,21 @@
+import { lazy } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import RequireAuth from './auth/RequireAuth.jsx'
 import Container from './components/Container.jsx'
 import Layout from './components/Layout.jsx'
-import BookingPage from './pages/BookingPage.jsx'
-import ChatPage from './pages/ChatPage.jsx'
 import ChooseRole from './pages/ChooseRole.jsx'
-import ClientHome from './pages/ClientHome.jsx'
-import Dashboard from './pages/Dashboard.jsx'
 import Home from './pages/Home.jsx'
-import Legal from './pages/Legal.jsx'
 import Login from './pages/Login.jsx'
 import MuaList from './pages/MuaList.jsx'
 import MuaProfile from './pages/MuaProfile.jsx'
 import NotFound from './pages/NotFound.jsx'
+
+// Halaman berat (peta, QR, chat, dashboard) baru diunduh saat dibuka, supaya beranda cepat.
+const BookingPage = lazy(() => import('./pages/BookingPage.jsx'))
+const ChatPage = lazy(() => import('./pages/ChatPage.jsx'))
+const ClientHome = lazy(() => import('./pages/ClientHome.jsx'))
+const Dashboard = lazy(() => import('./pages/Dashboard.jsx'))
+const Legal = lazy(() => import('./pages/Legal.jsx'))
 
 // Peta URL → halaman. Semua halaman dibungkus <Layout> (navbar + footer).
 // Beranda tampil full-width; halaman lain dibungkus <Container> (lebar maksimal + padding).
