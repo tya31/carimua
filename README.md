@@ -78,7 +78,7 @@ Buka http://localhost:5173. Tanpa `.env`, website berjalan dalam **mode demo** (
    7. `07_notifications.sql`: notifikasi di web (lonceng), trigger status booking, pg_cron: pengingat H-2 setiap 08.00 WIB & pembatalan otomatis booking yang tidak dibayar DP dalam 24 jam
 3. Cek di **Table Editor**: harus ada 12 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
 
-> **Ongkos transport:** jarak dihitung dengan rumus haversine (garis lurus) × 1.3 sebagai perkiraan jarak tempuh. Ongkos = (jarak − km gratis, dibulatkan ke atas) × tarif per km yang diatur MUA. Peta memakai OpenStreetMap/CARTO dan pencarian alamat memakai Nominatim (gratis, tanpa API key).
+> **Ongkos transport:** jarak dihitung dengan rumus haversine (garis lurus) × 1.3 sebagai perkiraan jarak tempuh. Ongkos = (jarak − km gratis, dibulatkan ke atas) × tarif per km yang diatur MUA. Peta memakai tile standar OpenStreetMap dan pencarian alamat memakai Nominatim (gratis, tanpa API key).
 
 ### 3. Isi file `.env`
 1. Salin `.env.example` menjadi `.env` (di folder yang sama).
