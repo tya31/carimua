@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { formatPriceRange } from '../lib/format.js'
+import Icon from './Icon.jsx'
 
 function MuaCard({ mua }) {
   return (
@@ -22,8 +23,8 @@ function MuaCard({ mua }) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/30 to-transparent" />
 
-        <span className="glass absolute right-3 top-3 rounded-full px-3 py-1 text-[11px] text-blush-50">
-          📍 {mua.city}
+        <span className="glass absolute right-3 top-3 flex items-center gap-1 rounded-full px-3 py-1 text-[11px] text-blush-50">
+          <Icon name="pin" className="h-3 w-3" /> {mua.city}
         </span>
 
         <div className="absolute inset-x-0 bottom-0 p-4">

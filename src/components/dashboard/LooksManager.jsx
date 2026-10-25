@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { deleteImageByUrl, MEDIA_ACCEPT, mediaTypeOf, uploadImage, validateMedia } from '../../lib/storage.js'
 import { supabase } from '../../lib/supabase.js'
+import Icon from '../Icon.jsx'
 import MediaView from '../MediaView.jsx'
 import { cardClass, dangerButton, inputClass, labelClass, MIN_LOOKS, primaryButton, secondaryButton } from './ui.js'
 
@@ -207,14 +208,14 @@ function LookItem({ userId, look, onChanged }) {
         {look.media.map((m) => (
           <div key={m.id} className="group relative h-28 w-20 overflow-hidden rounded-xl bg-ink-900">
             <MediaView media={m} preview className="h-full w-full" />
-            {m.type === 'video' && <span className="absolute left-1 top-1 text-xs">🎬</span>}
+            {m.type === 'video' && <Icon name="video" className="absolute left-1 top-1 h-3.5 w-3.5 text-white drop-shadow" />}
             <button
               type="button"
               onClick={() => removeMedia(m)}
               className="absolute right-1 top-1 rounded-full bg-ink-950/80 px-1.5 text-xs text-blush-50 opacity-0 transition group-hover:opacity-100"
               aria-label="Hapus file"
             >
-              ✕
+              <Icon name="x" className="h-3 w-3" />
             </button>
           </div>
         ))}

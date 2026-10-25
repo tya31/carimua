@@ -103,7 +103,7 @@ function MuaFilters({ filters, onChange, locations, categories }) {
             onClick={() => onChange({ city: '', area: '', category: '', minPrice: '', maxPrice: '' })}
             className="w-full rounded-2xl border border-white/10 px-4 py-2.5 text-sm text-blush-200 transition hover:border-wine-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
           >
-            Reset filter ↺
+            Reset filter
           </button>
         </div>
       </div>

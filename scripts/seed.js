@@ -181,10 +181,10 @@ const { data: convId, error: convError } = await clientApi.rpc('start_conversati
 check(convError, 'membuat chat demo (sudah menjalankan supabase/06_chat.sql?)')
 const t0 = Date.now() - 60 * 60 * 1000
 const chat = [
-  [clientId, 'Halo kak Rina! Paket lamaran sudah termasuk hijab do belum? 🥹'],
-  [muaIdBySlug['rina-makeup'], 'Halo kak 🤍 sudah termasuk hijab do + bulu mata ya.'],
-  [clientId, 'Oke kak, aku booking akad aja deh. DP-nya udah aku bayar ✨'],
-  [muaIdBySlug['rina-makeup'], 'Siap, sudah masuk! Nanti H-2 aku kabari lagi ya kak 💄'],
+  [clientId, 'Halo kak Rina! Paket lamaran sudah termasuk hijab do belum?'],
+  [muaIdBySlug['rina-makeup'], 'Halo kak, sudah termasuk hijab do + bulu mata ya.'],
+  [clientId, 'Oke kak, aku booking akad aja deh. DP-nya udah aku bayar.'],
+  [muaIdBySlug['rina-makeup'], 'Siap, sudah masuk! Nanti H-2 aku kabari lagi ya kak.'],
   [clientId, 'Makasih kak, ditunggu!'],
 ]
 check(

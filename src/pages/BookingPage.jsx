@@ -48,6 +48,25 @@ function BookingPage() {
   }, [slug])
 
   // Ringkasan biaya (perkiraan; angka final dihitung ulang oleh server saat disimpan).
+  // Titik berangkat MUA untuk peta. Dibulatkan ±1 km supaya alamat rumah MUA tidak terlihat persis
+  // (ongkos tetap dihitung server dari titik aslinya).
+  const origin = useMemo(
+    () =>
+      mua?.base_lat != null
+        ? {
+            lat: Math.round(mua.base_lat * 100) / 100,
+            lng: Math.round(mua.base_lng * 100) / 100,
+            label: `Area berangkat ${mua.name.split(' ')[0]}`,
+          }
+        : null,
+    [mua],
+  )
+  // Titik asli untuk angka jarak, sama dengan yang dipakai server menghitung ongkos.
+  const baseExact = useMemo(
+    () => (mua?.base_lat != null ? { lat: mua.base_lat, lng: mua.base_lng } : null),
+    [mua],
+  )
+
   const summary = useMemo(() => {
     if (!mua) return null
     const pkg = mua.packages.find((p) => p.id === packageId)
@@ -149,7 +168,7 @@ function BookingPage() {
           <div className="mt-4">
             <p className="text-xs uppercase tracking-wider text-blush-400">jadwal {mua.name.split(' ')[0]} yang sudah terisi</p>
             {busyDates.length === 0 ? (
-              <p className="mt-2 text-sm text-emerald-300">Masih kosong semua ✨</p>
+              <p className="mt-2 text-sm text-emerald-300">Masih kosong semua.</p>
             ) : (
               <div className="mt-2 flex flex-wrap gap-2">
                 {busyDates.map((d) => (
@@ -168,6 +187,8 @@ function BookingPage() {
           <p className="mt-1 text-sm text-blush-300">Ongkos transport dihitung otomatis dari jarak MUA ke titik ini.</p>
           <div className="mt-4">
             <LocationPicker
+              origin={origin}
+              distanceFrom={baseExact}
               value={point}
               onChange={({ lat, lng, address: found }) => {
                 setPoint({ lat, lng })

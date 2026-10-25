@@ -84,10 +84,10 @@ function Home() {
 
           <div className="absolute -right-2 bottom-24 flex animate-float flex-col items-end gap-2 [animation-delay:1.5s] sm:-right-10">
             <span className="rounded-2xl rounded-br-sm bg-wine-gradient px-4 py-2 text-sm text-white shadow-lg">
-              confidence in me? 🥹
+              confidence in me?
             </span>
             <span className="glass rounded-2xl rounded-br-sm px-4 py-2 text-sm text-blush-50">
-              for you, 10/10 ✨
+              for you, 10/10
             </span>
           </div>
 

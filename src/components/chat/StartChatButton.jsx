@@ -5,7 +5,7 @@ import { startConversation } from '../../lib/chat.js'
 
 // Tombol "Chat" → buka/buat percakapan dengan otherId lalu pindah ke /chat/:id.
 // Kalau belum login, diarahkan ke /login dulu.
-function StartChatButton({ otherId, className, children = '💬 Chat' }) {
+function StartChatButton({ otherId, className, children = 'Chat' }) {
   const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()

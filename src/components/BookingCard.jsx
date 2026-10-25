@@ -3,6 +3,7 @@ import { BOOKING_STATUS, formatDate, formatTime, googleCalendarLink } from '../l
 import { formatRupiah } from '../lib/format.js'
 import { formatPaymentType } from '../lib/payments.js'
 import StartChatButton from './chat/StartChatButton.jsx'
+import Icon from './Icon.jsx'
 
 // Kartu ringkas 1 booking. viewer = 'client' | 'mua' (menentukan siapa "lawan"-nya).
 // actions: tombol tambahan (batal/selesai) dari parent. Tombol chat selalu ada.
@@ -36,8 +37,14 @@ function BookingCard({ booking, viewer, actions }) {
         <span className={`rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}>{status.label}</span>
       </div>
 
-      <p className="mt-3 text-sm text-blush-300">📍 {booking.address}</p>
-      {booking.notes && <p className="mt-1 text-sm text-blush-300">📝 {booking.notes}</p>}
+      <p className="mt-3 flex gap-2 text-sm text-blush-300">
+        <Icon name="pin" className="mt-0.5 h-4 w-4 text-wine-300" /> {booking.address}
+      </p>
+      {booking.notes && (
+        <p className="mt-1 flex gap-2 text-sm text-blush-300">
+          <Icon name="note" className="mt-0.5 h-4 w-4 text-wine-300" /> {booking.notes}
+        </p>
+      )}
 
       <dl className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-4">
         <div>
@@ -75,16 +82,16 @@ function BookingCard({ booking, viewer, actions }) {
             )}
             target="_blank"
             rel="noreferrer"
-            className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400"
           >
-            📅 Google Calendar
+            <Icon name="calendar" /> Google Calendar
           </a>
         )}
         <StartChatButton
           otherId={viewer === 'client' ? booking.mua_id : booking.client_id}
-          className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400 disabled:opacity-50"
         >
-          💬 Chat {viewer === 'client' ? 'MUA' : 'klien'}
+          <Icon name="chat" /> Chat {viewer === 'client' ? 'MUA' : 'klien'}
         </StartChatButton>
       </div>
     </li>

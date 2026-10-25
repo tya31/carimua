@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatChatTime } from '../lib/chat.js'
 import { supabase } from '../lib/supabase.js'
+import Icon from './Icon.jsx'
 
 const ICONS = {
-  booking_new: '✨',
-  booking_confirmed: '🎉',
-  booking_cancelled: '✕',
-  booking_completed: '💄',
-  reminder_h2: '⏰',
+  booking_new: 'calendar',
+  booking_confirmed: 'check',
+  booking_cancelled: 'x',
+  booking_completed: 'sparkle',
+  reminder_h2: 'clock',
 }
 
 // Lonceng notifikasi di navbar: daftar 15 terbaru, angka belum dibaca, update realtime.
@@ -73,10 +74,10 @@ function NotificationBell({ userId }) {
       <button
         type="button"
         onClick={toggle}
-        className="relative rounded-full px-3 py-2 text-lg text-blush-200 transition hover:text-white"
+        className="relative flex items-center rounded-full px-3 py-2 text-blush-200 transition hover:text-white"
         aria-label={`Notifikasi${unread ? `, ${unread} belum dibaca` : ''}`}
       >
-        🔔
+        <Icon name="bell" className="h-5 w-5" />
         {unread > 0 && (
           <span className="absolute -right-0.5 top-0.5 rounded-full bg-wine-500 px-1.5 text-[10px] font-bold leading-4 text-white">
             {unread > 9 ? '9+' : unread}
@@ -101,7 +102,9 @@ function NotificationBell({ userId }) {
                     }}
                     className="flex w-full gap-3 px-4 py-3 text-left transition hover:bg-white/5"
                   >
-                    <span className="mt-0.5 text-lg">{ICONS[n.type] ?? '•'}</span>
+                    <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-wine-900/70 text-wine-300">
+                      <Icon name={ICONS[n.type] ?? 'bell'} className="h-3.5 w-3.5" />
+                    </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
                         <span className="truncate text-sm font-semibold text-blush-50">{n.title}</span>

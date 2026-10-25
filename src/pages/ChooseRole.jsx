@@ -1,18 +1,19 @@
 import { useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { homeForRole, useAuth } from '../auth/AuthContext.js'
+import Icon from '../components/Icon.jsx'
 import { supabase } from '../lib/supabase.js'
 
 const ROLES = [
   {
     value: 'client',
-    emoji: '💄',
+    icon: 'user',
     title: 'Aku Klien',
     text: 'Cari MUA, lihat portofolio, booking, dan chat langsung sama MUA-nya.',
   },
   {
     value: 'mua',
-    emoji: '🎨',
+    icon: 'brush',
     title: 'Aku MUA',
     text: 'Pajang portofolio & paket harga, terima booking, dapet link buat bio Instagram.',
   },
@@ -60,7 +61,7 @@ function ChooseRole() {
             onClick={() => choose(r.value)}
             className="glass group rounded-[2rem] p-8 text-left transition hover:-translate-y-1 hover:border-wine-400/60 disabled:opacity-60"
           >
-            <span className="text-4xl">{r.emoji}</span>
+            <Icon name={r.icon} className="h-9 w-9 text-wine-300" strokeWidth={1.3} />
             <p className="mt-4 font-display text-4xl text-blush-50">{r.title}</p>
             <p className="mt-2 text-sm text-blush-300">{r.text}</p>
             <p className="mt-6 text-sm font-semibold text-wine-300 group-hover:text-wine-400">

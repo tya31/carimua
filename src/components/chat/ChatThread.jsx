@@ -96,7 +96,7 @@ function ChatThread({ conversation, userId, onBack }) {
           <p className="text-sm text-blush-300">Memuat…</p>
         ) : messages.length === 0 ? (
           <div className="mt-10 text-center">
-            <p className="font-display text-3xl italic text-blush-100">say hi 👋</p>
+            <p className="font-display text-3xl italic text-blush-100">say hi.</p>
             <p className="mt-1 text-sm text-blush-400">Tanya jadwal, paket, atau minta referensi look.</p>
           </div>
         ) : (

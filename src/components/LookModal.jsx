@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Icon from './Icon.jsx'
 import MediaView from './MediaView.jsx'
 
 // Pop-up detail 1 look: semua foto/video + model + produk yang dipakai.
@@ -46,8 +47,8 @@ function LookModal({ look, onClose }) {
         <div className="flex flex-col gap-5 p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <h3 className="font-display text-4xl leading-tight text-blush-50">{look.title}</h3>
-            <button type="button" onClick={onClose} className="text-xl text-blush-300 hover:text-white" aria-label="Tutup">
-              ✕
+            <button type="button" onClick={onClose} className="text-blush-300 hover:text-white" aria-label="Tutup">
+              <Icon name="x" className="h-5 w-5" />
             </button>
           </div>
           {look.model_name && (

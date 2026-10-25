@@ -73,7 +73,7 @@ function MuaList() {
           <p className="text-wine-300">Gagal memuat data: {result.error.message}</p>
         ) : result.muas.length === 0 ? (
           <div className="glass rounded-[2rem] p-10 text-center">
-            <p className="font-display text-4xl text-blush-50">hmm, kosong 🥲</p>
+            <p className="font-display text-4xl text-blush-50">hmm, kosong.</p>
             <p className="mt-2 text-blush-300">Belum ada MUA yang cocok. Coba longgarkan filternya.</p>
           </div>
         ) : (

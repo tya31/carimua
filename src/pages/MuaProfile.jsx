@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
 import StartChatButton from '../components/chat/StartChatButton.jsx'
+import Icon from '../components/Icon.jsx'
 import LookModal from '../components/LookModal.jsx'
 import MediaView from '../components/MediaView.jsx'
 import { getMuaBySlug } from '../lib/api.js'
@@ -42,7 +43,7 @@ function MuaProfile() {
   if (!result.mua) {
     return (
       <section className="py-20 text-center">
-        <h1 className="font-display text-5xl text-blush-50">MUA tidak ditemukan 🥲</h1>
+        <h1 className="font-display text-5xl text-blush-50">MUA tidak ditemukan</h1>
         <Link to="/mua" className="mt-6 inline-block text-wine-300 hover:underline">
           ← Kembali ke daftar MUA
         </Link>
@@ -91,7 +92,7 @@ function MuaProfile() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-blush-200">
-            <span>📍 {mua.area ? `${mua.area}, ${mua.city}` : mua.city}</span>
+            <span className="flex items-center gap-1.5"><Icon name="pin" className="h-3.5 w-3.5" /> {mua.area ? `${mua.area}, ${mua.city}` : mua.city}</span>
             <span className="font-semibold text-wine-300">
               {prices.length ? formatPriceRange(Math.min(...prices), Math.max(...prices)) : 'Belum ada paket'}
             </span>
@@ -116,17 +117,17 @@ function MuaProfile() {
           {role !== 'mua' && (
             <Link
               to={`/mua/${mua.slug}/booking`}
-              className="rounded-full bg-wine-gradient px-6 py-3.5 text-center font-semibold text-white shadow-lg shadow-wine-700/40 transition hover:brightness-110"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-wine-gradient px-6 py-3.5 text-center font-semibold text-white shadow-lg shadow-wine-700/40 transition hover:brightness-110"
             >
-              ✨ Booking sekarang
+              <Icon name="calendar" /> Booking sekarang
             </Link>
           )}
           {role !== 'mua' && (
             <StartChatButton
               otherId={mua.id}
-              className="rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
             >
-              💬 Chat MUA
+              <Icon name="chat" /> Chat MUA
             </StartChatButton>
           )}
           {mua.whatsapp && (
@@ -134,9 +135,9 @@ function MuaProfile() {
               href={whatsappLink(mua.whatsapp, mua.name)}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
             >
-              💬 Hubungi via WhatsApp
+              <Icon name="phone" /> Hubungi via WhatsApp
             </a>
           )}
           {mua.transport_rate_per_km > 0 && (
@@ -150,17 +151,17 @@ function MuaProfile() {
               href={instagramLink(mua.instagram)}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
             >
-              📸 @{mua.instagram}
+              <Icon name="instagram" /> @{mua.instagram}
             </a>
           )}
           <button
             type="button"
             onClick={copyLink}
-            className="rounded-full border border-white/15 px-6 py-3 text-sm text-blush-100 transition hover:border-wine-400"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm text-blush-100 transition hover:border-wine-400"
           >
-            {copied ? 'Link tersalin ✓' : '🔗 Salin link profil'}
+            <Icon name={copied ? 'check' : 'link'} /> {copied ? 'Link tersalin' : 'Salin link profil'}
           </button>
         </section>
 

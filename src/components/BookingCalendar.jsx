@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { BOOKING_STATUS, formatTime, todayIso } from '../lib/bookings.js'
+import { BOOKING_STATUS, formatDate, formatTime, todayIso } from '../lib/bookings.js'
 
 const DAYS = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
 const monthFmt = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' })
@@ -47,83 +47,88 @@ function BookingCalendar({ bookings, nameOf }) {
   const shift = (n) => setCursor((c) => new Date(c.getFullYear(), c.getMonth() + n, 1))
   const dayBookings = selected ? byDate[selected] ?? [] : []
 
+
   return (
-    <section className="rounded-[2rem] border border-white/10 bg-ink-900/80 p-6 sm:p-8">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="font-display text-4xl text-blush-50">Kalender</h2>
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={() => shift(-1)} className="rounded-full border border-white/15 px-3 py-1 text-blush-100 hover:border-wine-400" aria-label="Bulan sebelumnya">
+    <section className="grid gap-5 rounded-[2rem] border border-white/10 bg-ink-900/80 p-5 sm:p-6 md:grid-cols-[300px_1fr]">
+      {/* Kalender kecil */}
+      <div>
+        <div className="flex items-center justify-between">
+          <button type="button" onClick={() => shift(-1)} className="rounded-full px-2 py-1 text-blush-300 hover:text-white" aria-label="Bulan sebelumnya">
             ‹
           </button>
-          <span className="min-w-36 text-center text-sm font-semibold capitalize text-blush-50">{monthFmt.format(cursor)}</span>
-          <button type="button" onClick={() => shift(1)} className="rounded-full border border-white/15 px-3 py-1 text-blush-100 hover:border-wine-400" aria-label="Bulan berikutnya">
+          <span className="text-sm font-semibold capitalize text-blush-50">{monthFmt.format(cursor)}</span>
+          <button type="button" onClick={() => shift(1)} className="rounded-full px-2 py-1 text-blush-300 hover:text-white" aria-label="Bulan berikutnya">
             ›
           </button>
         </div>
+
+        <div className="mt-3 grid grid-cols-7 text-center text-[10px] uppercase tracking-wider text-blush-400">
+          {DAYS.map((d) => (
+            <span key={d}>{d.slice(0, 2)}</span>
+          ))}
+        </div>
+        <div className="mt-1 grid grid-cols-7 gap-0.5">
+          {cells.map((date, i) =>
+            date === null ? (
+              <span key={`x${i}`} />
+            ) : (
+              <button
+                key={date}
+                type="button"
+                onClick={() => setSelected(date)}
+                className={`relative flex h-9 items-center justify-center rounded-lg text-xs transition ${
+                  selected === date
+                    ? 'bg-wine-gradient font-semibold text-white'
+                    : date === today
+                      ? 'border border-wine-400/60 text-blush-50'
+                      : 'text-blush-200 hover:bg-white/5'
+                }`}
+              >
+                {Number(date.slice(8))}
+                {byDate[date] && (
+                  <span className="absolute bottom-1 flex gap-0.5">
+                    {byDate[date].slice(0, 3).map((b) => (
+                      <span key={b.id} className={`h-1 w-1 rounded-full ${DOT[b.status]}`} />
+                    ))}
+                  </span>
+                )}
+              </button>
+            ),
+          )}
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-blush-400">
+          {['confirmed', 'pending_payment', 'completed'].map((s) => (
+            <span key={s} className="flex items-center gap-1">
+              <span className={`h-1.5 w-1.5 rounded-full ${DOT[s]}`} /> {BOOKING_STATUS[s].label}
+            </span>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-7 gap-1 text-center text-[11px] uppercase tracking-wider text-blush-400">
-        {DAYS.map((d) => (
-          <span key={d}>{d}</span>
-        ))}
-      </div>
-      <div className="mt-2 grid grid-cols-7 gap-1">
-        {cells.map((date, i) =>
-          date === null ? (
-            <span key={`x${i}`} />
+      {/* Jadwal di tanggal terpilih */}
+      <div className="min-w-0 md:border-l md:border-white/10 md:pl-5">
+        <p className="text-xs uppercase tracking-[0.25em] text-wine-300">jadwal</p>
+        <p className="mt-1 font-display text-2xl text-blush-50">{selected ? formatDate(selected) : 'Pilih tanggal'}</p>
+        {selected &&
+          (dayBookings.length === 0 ? (
+            <p className="mt-3 text-sm text-blush-400">Tidak ada jadwal di tanggal ini.</p>
           ) : (
-            <button
-              key={date}
-              type="button"
-              onClick={() => setSelected(date)}
-              className={`flex aspect-square flex-col items-center justify-center rounded-2xl text-sm transition ${
-                selected === date
-                  ? 'bg-wine-gradient text-white'
-                  : date === today
-                    ? 'border border-wine-400/60 text-blush-50'
-                    : 'text-blush-200 hover:bg-white/5'
-              }`}
-            >
-              {Number(date.slice(8))}
-              <span className="mt-0.5 flex h-1.5 gap-0.5">
-                {(byDate[date] ?? []).slice(0, 3).map((b) => (
-                  <span key={b.id} className={`h-1.5 w-1.5 rounded-full ${DOT[b.status]}`} />
-                ))}
-              </span>
-            </button>
-          ),
-        )}
-      </div>
-
-      <div className="mt-4 flex flex-wrap gap-4 text-[11px] text-blush-400">
-        {['confirmed', 'pending_payment', 'completed'].map((s) => (
-          <span key={s} className="flex items-center gap-1.5">
-            <span className={`h-2 w-2 rounded-full ${DOT[s]}`} /> {BOOKING_STATUS[s].label}
-          </span>
-        ))}
-      </div>
-
-      {selected && (
-        <div className="mt-5 border-t border-white/10 pt-4">
-          {dayBookings.length === 0 ? (
-            <p className="text-sm text-blush-400">Tidak ada jadwal di tanggal ini.</p>
-          ) : (
-            <ul className="space-y-2">
+            <ul className="mt-3 space-y-2">
               {dayBookings.map((b) => (
                 <li key={b.id} className="flex items-center justify-between gap-3 rounded-2xl bg-white/5 px-4 py-3 text-sm">
-                  <span className="text-blush-50">
+                  <span className="min-w-0 text-blush-50">
                     {formatTime(b.event_time)} · {b.package_name}
-                    <span className="block text-xs text-blush-300">{nameOf(b)}</span>
+                    <span className="block truncate text-xs text-blush-300">{nameOf(b)}</span>
                   </span>
-                  <span className={`rounded-full px-2.5 py-0.5 text-[11px] ${BOOKING_STATUS[b.status].className}`}>
+                  <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] ${BOOKING_STATUS[b.status].className}`}>
                     {BOOKING_STATUS[b.status].label}
                   </span>
                 </li>
               ))}
             </ul>
-          )}
-        </div>
-      )}
+          ))}
+      </div>
     </section>
   )
 }

@@ -5,7 +5,7 @@
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
--- 1. Tabel notifikasi (lonceng 🔔 di navbar)
+-- 1. Tabel notifikasi (lonceng di navbar)
 -- ---------------------------------------------------------------------
 create table if not exists public.notifications (
   id           uuid primary key default gen_random_uuid(),
@@ -85,7 +85,7 @@ begin
 
   if tg_op = 'INSERT' then
     perform public.notify(new.mua_id, new.id, 'booking_new',
-      'Booking baru masuk ✨',
+      'Booking baru masuk',
       client_name || ' booking ' || new.package_name || ' untuk ' || tanggal || '. Menunggu DP.',
       '/dashboard');
     return new;
@@ -97,11 +97,11 @@ begin
 
   if new.status = 'confirmed' then
     perform public.notify(new.client_id, new.id, 'booking_confirmed',
-      'DP diterima, booking terkonfirmasi 🎉',
+      'DP diterima, booking terkonfirmasi',
       new.package_name || ' bersama ' || mua_name || ' pada ' || tanggal || '.',
       '/akun');
     perform public.notify(new.mua_id, new.id, 'booking_confirmed',
-      'DP sudah dibayar 💳',
+      'DP sudah dibayar',
       client_name || ' membayar DP untuk ' || new.package_name || ' (' || tanggal || ').',
       '/dashboard');
   elsif new.status = 'cancelled' then
@@ -115,7 +115,7 @@ begin
       '/dashboard');
   elsif new.status = 'completed' then
     perform public.notify(new.client_id, new.id, 'booking_completed',
-      'Terima kasih sudah glow up bareng ' || mua_name || ' 💄',
+      'Terima kasih sudah glow up bareng ' || mua_name,
       'Semoga acaramu lancar!',
       '/akun');
   end if;

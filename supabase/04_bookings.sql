@@ -132,7 +132,10 @@ returns trigger
 language plpgsql
 as $$
 begin
-  if (to_jsonb(new) - 'status' - 'updated_at') is distinct from (to_jsonb(old) - 'status' - 'updated_at') then
+  -- package_id boleh berubah jadi NULL (otomatis saat MUA menghapus paketnya);
+  -- nama & harga paket sudah tersimpan di booking ini.
+  if (to_jsonb(new) - 'status' - 'updated_at' - 'package_id') is distinct from (to_jsonb(old) - 'status' - 'updated_at' - 'package_id')
+     or (new.package_id is not null and new.package_id is distinct from old.package_id) then
     raise exception 'Detail booking tidak bisa diubah';
   end if;
 

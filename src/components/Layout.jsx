@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { homeForRole, useAuth } from '../auth/AuthContext.js'
 import { isDemoMode, supabase } from '../lib/supabase.js'
 import { useUnreadCount } from './chat/useUnreadCount.js'
+import Icon from './Icon.jsx'
 import Logo from './Logo.jsx'
 import NotificationBell from './NotificationBell.jsx'
 
@@ -91,7 +92,7 @@ function Layout() {
               aria-expanded={open}
               aria-label="Menu"
             >
-              {open ? '✕' : '☰'}
+              <Icon name={open ? 'x' : 'menu'} className="h-5 w-5" />
             </button>
           </div>
         </nav>

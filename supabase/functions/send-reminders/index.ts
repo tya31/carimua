@@ -68,7 +68,7 @@ Deno.serve(async () => {
     const recipients = [
       {
         user_id: b.client_id,
-        title: `2 hari lagi kamu glow up bareng ${mua} 💄`,
+        title: `2 hari lagi kamu glow up bareng ${mua}`,
         body: `${b.package_name} · ${when}. Lokasi: ${b.address}`,
         link: '/akun',
       },

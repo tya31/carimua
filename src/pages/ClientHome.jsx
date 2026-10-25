@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
 import BookingCalendar from '../components/BookingCalendar.jsx'
+import Icon from '../components/Icon.jsx'
 import BookingCard from '../components/BookingCard.jsx'
 import { daysUntil, formatDate, formatTime, googleCalendarLink, todayIso } from '../lib/bookings.js'
 import PaymentHistory from '../components/PaymentHistory.jsx'
@@ -99,7 +100,7 @@ function ClientHome() {
 
       {location.state?.booked && (
         <p className="rounded-2xl border border-emerald-400/30 bg-emerald-900/30 p-4 text-sm text-emerald-300">
-          Booking berhasil dibuat 🎉 Statusnya “Menunggu DP” sampai DP 5% dibayar.
+          Booking berhasil dibuat. Statusnya “Menunggu DP” sampai DP 5% dibayar.
         </p>
       )}
 
@@ -122,7 +123,7 @@ function ClientHome() {
             rel="noreferrer"
             className="rounded-full bg-blush-50 px-5 py-2.5 text-sm font-semibold text-ink-950 transition hover:bg-white"
           >
-            📅 Simpan ke Google Calendar
+            <Icon name="calendar" /> Simpan ke Google Calendar
           </a>
         </div>
       )}
@@ -156,7 +157,7 @@ function ClientHome() {
                         disabled={!paymentsEnabled || payingId !== null}
                         className="rounded-full bg-wine-gradient px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-wine-700/30 transition hover:brightness-110 disabled:opacity-50"
                       >
-                        {payingId === b.id ? 'Memproses…' : '💳 Bayar DP'}
+                        {payingId === b.id ? 'Memproses…' : <><Icon name="card" /> Bayar DP</>}
                       </button>
                       {b.payments?.some((p) => p.status === 'pending') && (
                         <button type="button" onClick={() => checkStatus(b)} disabled={payingId !== null} className={neutralButton}>

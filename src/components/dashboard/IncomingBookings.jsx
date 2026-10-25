@@ -50,7 +50,7 @@ function IncomingBookings({ bookings, onChanged }) {
       {error && <p className="mt-3 text-sm text-wine-300">{error}</p>}
 
       {bookings.length === 0 ? (
-        <p className="mt-5 text-sm text-blush-300">Belum ada booking. Bagikan link profilmu biar klien makin banyak ✨</p>
+        <p className="mt-5 text-sm text-blush-300">Belum ada booking. Bagikan link profilmu biar klien makin banyak.</p>
       ) : (
         <>
           <h3 className="mt-6 text-xs uppercase tracking-[0.25em] text-wine-300">akan datang</h3>

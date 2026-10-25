@@ -43,5 +43,33 @@ export async function reverseGeocode(lat, lng) {
   return row.display_name ?? null
 }
 
+// ---------- Saran alamat saat mengetik (Photon, berbasis OpenStreetMap, gratis) ----------
+// Nominatim tidak boleh dipakai untuk autocomplete, jadi saran otomatis memakai Photon.
+// near: { lat, lng } → hasil yang dekat titik itu diutamakan (misalnya area MUA).
+const PHOTON = 'https://photon.komoot.io/api/'
+const INDONESIA_BBOX = '95,-11.5,141.5,6.5'
+
+function photonLabel(p) {
+  const street = [p.street, p.housenumber].filter(Boolean).join(' ')
+  const parts = [p.name, street, p.district ?? p.locality, p.city ?? p.county, p.state]
+  return [...new Set(parts.filter(Boolean))].join(', ')
+}
+
+export async function suggestPlaces(query, near, signal) {
+  const params = new URLSearchParams({ q: query, limit: '6', bbox: INDONESIA_BBOX })
+  if (near) {
+    params.set('lat', near.lat)
+    params.set('lon', near.lng)
+  }
+  const res = await fetch(`${PHOTON}?${params}`, { signal })
+  if (!res.ok) throw new Error('Saran alamat sedang tidak tersedia.')
+  const json = await res.json()
+  return json.features.map((f) => ({
+    label: photonLabel(f.properties),
+    lat: f.geometry.coordinates[1],
+    lng: f.geometry.coordinates[0],
+  }))
+}
+
 // Titik tengah Indonesia (dipakai kalau belum ada lokasi).
 export const INDONESIA_CENTER = { lat: -2.5, lng: 118, zoom: 5 }

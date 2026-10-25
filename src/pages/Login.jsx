@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { homeForRole, useAuth } from '../auth/AuthContext.js'
+import Icon from '../components/Icon.jsx'
 import ImageSlot from '../components/ImageSlot.jsx'
 import Logo from '../components/Logo.jsx'
 import { isDemoMode, supabase } from '../lib/supabase.js'
@@ -16,8 +17,8 @@ const DEMO_ACCOUNTS = [
 const DEMO_PASSWORD = 'carimua123'
 
 const ROLES = [
-  { value: 'client', emoji: '💄', title: 'Klien', text: 'Aku mau cari & booking MUA' },
-  { value: 'mua', emoji: '🎨', title: 'MUA', text: 'Aku makeup artist' },
+  { value: 'client', icon: 'user', title: 'Klien', text: 'Aku mau cari & booking MUA' },
+  { value: 'mua', icon: 'brush', title: 'MUA', text: 'Aku makeup artist' },
 ]
 
 function translateError(message) {
@@ -105,7 +106,7 @@ function Login() {
         <div className="absolute inset-x-0 bottom-0 p-8">
           <Logo className="text-4xl" />
           <p className="mt-3 max-w-xs text-sm text-blush-200">
-            keep moving forward on a stable journey — and look good doing it ✨
+            keep moving forward on a stable journey — and look good doing it.
           </p>
         </div>
       </div>
@@ -115,7 +116,7 @@ function Login() {
         <p className="text-xs uppercase tracking-[0.3em] text-wine-400">{mode === 'login' ? 'login' : 'daftar'}</p>
         <h1 className="mt-2 font-display text-5xl italic text-blush-50">{title}</h1>
         <p className="mt-2 text-sm text-blush-300">
-          {location.state?.from ? 'Login dulu ya buat lanjut ✨' : 'Klien & MUA masuk dari sini.'}
+          {location.state?.from ? 'Login dulu ya buat lanjut.' : 'Klien & MUA masuk dari sini.'}
         </p>
 
         {isDemoMode ? (
@@ -158,7 +159,7 @@ function Login() {
                             : 'border-white/10 hover:border-white/25'
                         }`}
                       >
-                        <span className="text-2xl">{r.emoji}</span>
+                        <Icon name={r.icon} className="h-6 w-6 text-wine-300" />
                         <p className="mt-1 font-semibold text-blush-50">{r.title}</p>
                         <p className="text-xs text-blush-300">{r.text}</p>
                       </button>
