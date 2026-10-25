@@ -3,6 +3,7 @@ import RequireAuth from './auth/RequireAuth.jsx'
 import Container from './components/Container.jsx'
 import Layout from './components/Layout.jsx'
 import BookingPage from './pages/BookingPage.jsx'
+import ChatPage from './pages/ChatPage.jsx'
 import ChooseRole from './pages/ChooseRole.jsx'
 import ClientHome from './pages/ClientHome.jsx'
 import Dashboard from './pages/Dashboard.jsx'
@@ -60,6 +61,14 @@ function App() {
             element={
               <RequireAuth role="mua">
                 <Dashboard />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/chat/:id?"
+            element={
+              <RequireAuth>
+                <ChatPage />
               </RequireAuth>
             }
           />

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { homeForRole, useAuth } from '../auth/AuthContext.js'
 import { isDemoMode, supabase } from '../lib/supabase.js'
+import { useUnreadCount } from './chat/useUnreadCount.js'
 import Logo from './Logo.jsx'
 
 const year = new Date().getFullYear()
@@ -11,6 +12,7 @@ function Layout() {
   const { user, role } = useAuth()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
+  const unread = useUnreadCount(role ? user?.id : null)
 
   async function handleLogout() {
     // Pindah ke beranda dulu, supaya halaman yang wajib login tidak keburu melempar ke /login.
@@ -31,6 +33,16 @@ function Layout() {
       </NavLink>
       {user ? (
         <>
+          {role && (
+            <NavLink to="/chat" className={navClass} onClick={() => setOpen(false)}>
+              Chat
+              {unread > 0 && (
+                <span className="ml-1.5 rounded-full bg-wine-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                  {unread > 99 ? '99+' : unread}
+                </span>
+              )}
+            </NavLink>
+          )}
           {role && (
             <NavLink to={homeForRole(role)} className={navClass} onClick={() => setOpen(false)}>
               {role === 'mua' ? 'Dashboard' : 'Akun saya'}

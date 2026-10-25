@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
+import StartChatButton from '../components/chat/StartChatButton.jsx'
 import LookModal from '../components/LookModal.jsx'
 import MediaView from '../components/MediaView.jsx'
 import { getMuaBySlug } from '../lib/api.js'
@@ -119,6 +120,14 @@ function MuaProfile() {
             >
               ✨ Booking sekarang
             </Link>
+          )}
+          {role !== 'mua' && (
+            <StartChatButton
+              otherId={mua.id}
+              className="rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
+            >
+              💬 Chat MUA
+            </StartChatButton>
           )}
           {mua.whatsapp && (
             <a

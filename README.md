@@ -74,7 +74,8 @@ Buka http://localhost:5173. Tanpa `.env`, website berjalan dalam **mode demo** (
    3. `03_looks.sql`: portofolio berbentuk **look** (foto/video, model & produk opsional), Instagram, aturan minimal 2 look agar tampil di pencarian
    4. `04_bookings.sql`: lokasi & tarif transport MUA, tabel `bookings`, harga/jarak/DP 5% dihitung di server (trigger), 1 jadwal per hari per MUA
    5. `05_payments.sql`: tabel `payments` (riwayat transaksi DP), hanya bisa ditulis server
-3. Cek di **Table Editor**: harus ada 9 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
+   6. `06_chat.sql`: chat realtime klien ↔ MUA (`conversations`, `messages`, status dibaca, Supabase Realtime)
+3. Cek di **Table Editor**: harus ada 11 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
 
 > **Ongkos transport:** jarak dihitung dengan rumus haversine (garis lurus) × 1.3 sebagai perkiraan jarak tempuh. Ongkos = (jarak − km gratis, dibulatkan ke atas) × tarif per km yang diatur MUA. Peta memakai OpenStreetMap/CARTO dan pencarian alamat memakai Nominatim (gratis, tanpa API key).
 

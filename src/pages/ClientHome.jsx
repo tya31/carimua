@@ -8,7 +8,6 @@ import { supabase } from '../lib/supabase.js'
 
 // Fitur yang menyusul di fase berikutnya.
 const UPCOMING = [
-  { emoji: '💬', title: 'Chat MUA', text: 'Ngobrol langsung sama MUA yang kamu booking.' },
   { emoji: '🔔', title: 'Pengingat H-2', text: 'Notifikasi & email 2 hari sebelum jadwal.' },
 ]
 

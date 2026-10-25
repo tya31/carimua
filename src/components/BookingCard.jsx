@@ -2,9 +2,10 @@ import { Link } from 'react-router-dom'
 import { BOOKING_STATUS, formatDate, formatTime } from '../lib/bookings.js'
 import { formatRupiah } from '../lib/format.js'
 import { formatPaymentType } from '../lib/payments.js'
+import StartChatButton from './chat/StartChatButton.jsx'
 
 // Kartu ringkas 1 booking. viewer = 'client' | 'mua' (menentukan siapa "lawan"-nya).
-// actions: tombol tambahan (batal/selesai) dari parent.
+// actions: tombol tambahan (batal/selesai) dari parent. Tombol chat selalu ada.
 function BookingCard({ booking, viewer, actions }) {
   const status = BOOKING_STATUS[booking.status]
   const paidPayment = booking.payments?.find((p) => p.status === 'paid')
@@ -64,7 +65,15 @@ function BookingCard({ booking, viewer, actions }) {
         </p>
       )}
 
-      {actions && <div className="mt-4 flex flex-wrap gap-2">{actions}</div>}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        {actions}
+        <StartChatButton
+          otherId={viewer === 'client' ? booking.mua_id : booking.client_id}
+          className="rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400 disabled:opacity-50"
+        >
+          💬 Chat {viewer === 'client' ? 'MUA' : 'klien'}
+        </StartChatButton>
+      </div>
     </li>
   )
 }
