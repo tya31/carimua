@@ -73,9 +73,10 @@ Buka http://localhost:5173. Tanpa `.env`, website berjalan dalam **mode demo** (
    2. `02_roles.sql`: tabel `profiles` (peran **Klien / MUA**) + trigger akun baru
    3. `03_looks.sql`: portofolio berbentuk **look** (foto/video, model & produk opsional), Instagram, aturan minimal 2 look agar tampil di pencarian
    4. `04_bookings.sql`: lokasi & tarif transport MUA, tabel `bookings`, harga/jarak/DP 5% dihitung di server (trigger), 1 jadwal per hari per MUA
-3. Cek di **Table Editor**: harus ada 8 tabel.
+   5. `05_payments.sql`: tabel `payments` (riwayat transaksi DP), hanya bisa ditulis server
+3. Cek di **Table Editor**: harus ada 9 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
 
-> **Ongkos transport:** jarak dihitung dengan rumus haversine (garis lurus) × 1.3 sebagai perkiraan jarak tempuh. Ongkos = (jarak − km gratis, dibulatkan ke atas) × tarif per km yang diatur MUA. Peta memakai OpenStreetMap/CARTO dan pencarian alamat memakai Nominatim (gratis, tanpa API key). Cek juga **Storage**: harus ada bucket `portfolio`.
+> **Ongkos transport:** jarak dihitung dengan rumus haversine (garis lurus) × 1.3 sebagai perkiraan jarak tempuh. Ongkos = (jarak − km gratis, dibulatkan ke atas) × tarif per km yang diatur MUA. Peta memakai OpenStreetMap/CARTO dan pencarian alamat memakai Nominatim (gratis, tanpa API key).
 
 ### 3. Isi file `.env`
 1. Salin `.env.example` menjadi `.env` (di folder yang sama).
@@ -103,7 +104,21 @@ Nomor WhatsApp dummy sengaja memakai awalan `62800…` supaya tidak nyasar ke no
 
 Akun yang pertama kali login lewat Google akan diminta memilih peran (Klien / MUA) di halaman `/pilih-peran`.
 
-### 6. Coba login & dashboard
+### 6. Pembayaran DP 5% (Midtrans Sandbox)
+Alur: klien klik **Bayar DP** → Edge Function `payments` membuat transaksi Snap (nominal diambil dari database, bukan dari browser) → klien bayar di pop-up Midtrans → Midtrans memanggil Edge Function `midtrans-webhook` (dicek tanda tangan SHA-512 + status diambil ulang dari API Midtrans) → booking otomatis **Terkonfirmasi** dan transaksi tercatat di tabel `payments`.
+
+1. Daftar di https://dashboard.midtrans.com, pilih environment **Sandbox**, lalu buka **Settings → Access Keys**.
+2. **Client Key** → `.env` (dan Vercel) sebagai `VITE_MIDTRANS_CLIENT_KEY`.
+3. **Server Key** → Supabase **Edge Functions → Secrets** sebagai `MIDTRANS_SERVER_KEY` (rahasia, jangan di `.env` website).
+4. Deploy Edge Functions (sekali login dulu dengan `npx supabase login`):
+   ```bash
+   npx supabase functions deploy payments --project-ref <project-ref> --no-verify-jwt --use-api
+   npx supabase functions deploy midtrans-webhook --project-ref <project-ref> --no-verify-jwt --use-api
+   ```
+5. Di Midtrans **Settings → Payment → Notification URL** isi `https://<project-ref>.supabase.co/functions/v1/midtrans-webhook`.
+6. Tes bayar: pilih **BCA Virtual Account** di pop-up, lalu bayar nomor VA-nya di https://simulator.sandbox.midtrans.com/bca/va/index (uang simulasi).
+
+### 7. Coba login & dashboard
 - Login di `/login` dengan salah satu akun dummy, lalu ubah profil, paket, atau upload foto.
 - Atau klik **Daftar** untuk membuat akun baru. Secara default Supabase mengirim **email konfirmasi** dulu.
   > Catatan: email bawaan Supabase dibatasi beberapa email per jam. Untuk testing, kamu bisa mematikan konfirmasi di **Authentication → Sign In / Providers → Email → Confirm email**.
@@ -118,9 +133,10 @@ Akun yang pertama kali login lewat Google akan diminta memilih peran (Klien / MU
    git push -u origin main
    ```
 2. Di https://vercel.com klik **Add New → Project**, lalu import repo tadi. Framework akan terdeteksi otomatis sebagai **Vite**.
-3. Di **Environment Variables**, tambahkan **hanya** dua variabel ini:
+3. Di **Environment Variables**, tambahkan **hanya** variabel berawalan `VITE_`:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - `VITE_MIDTRANS_CLIENT_KEY`
 4. Klik **Deploy**.
 5. Kembali ke Supabase, buka **Authentication → URL Configuration**:
    - **Site URL**: `https://<nama-project>.vercel.app`
