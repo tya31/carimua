@@ -25,6 +25,17 @@ export function whatsappLink(number, muaName) {
   return `https://wa.me/${normalizeWhatsapp(number)}?text=${encodeURIComponent(text)}`
 }
 
+// "@rina.mua" / "https://instagram.com/rina.mua/" → "rina.mua"
+export function normalizeInstagram(value) {
+  return (value ?? '')
+    .trim()
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+    .replace(/^@/, '')
+    .replace(/[/?#].*$/, '')
+}
+
+export const instagramLink = (username) => `https://instagram.com/${normalizeInstagram(username)}`
+
 // "Rina Makeup Artistry" → "rina-makeup-artistry"
 export function slugify(text) {
   return text

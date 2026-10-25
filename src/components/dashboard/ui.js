@@ -1,3 +1,6 @@
+// Jumlah look minimal supaya profil MUA tampil di pencarian (sama dengan view mua_list di 03_looks.sql).
+export const MIN_LOOKS = 2
+
 // Kelas Tailwind yang dipakai bersama oleh form-form di dashboard.
 export const inputClass =
   'mt-1.5 w-full rounded-2xl border border-white/10 bg-ink-800 px-4 py-2.5 text-sm text-blush-50 placeholder:text-blush-400 focus:border-wine-400 focus:outline-none'

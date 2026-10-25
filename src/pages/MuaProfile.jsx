@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import LookModal from '../components/LookModal.jsx'
+import MediaView from '../components/MediaView.jsx'
 import { getMuaBySlug } from '../lib/api.js'
-import { formatPriceRange, formatRupiah, whatsappLink } from '../lib/format.js'
+import { formatPriceRange, formatRupiah, instagramLink, whatsappLink } from '../lib/format.js'
 
 function SectionTitle({ serif, bold }) {
   return (
@@ -16,8 +18,9 @@ function MuaProfile() {
   // :slug di rute /mua/:slug, misalnya /mua/rina-makeup → slug = "rina-makeup"
   const { slug } = useParams()
   const [result, setResult] = useState({ slug: null, mua: null, error: null })
-  const [openPhoto, setOpenPhoto] = useState(null)
+  const [openLook, setOpenLook] = useState(null)
   const [copied, setCopied] = useState(false)
+  const closeLook = useCallback(() => setOpenLook(null), [])
 
   useEffect(() => {
     let ignore = false
@@ -47,6 +50,10 @@ function MuaProfile() {
   const { mua } = result
   const prices = mua.packages.map((p) => p.price)
   const firstName = mua.name.split(' ')[0]
+  // Semua video dari semua look, untuk bagian "Videography".
+  const videos = mua.looks.flatMap((look) =>
+    look.media.filter((m) => m.type === 'video').map((media) => ({ media, look })),
+  )
 
   async function copyLink() {
     await navigator.clipboard.writeText(window.location.href)
@@ -113,6 +120,16 @@ function MuaProfile() {
               💬 Hubungi via WhatsApp
             </a>
           )}
+          {mua.instagram && (
+            <a
+              href={instagramLink(mua.instagram)}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
+            >
+              📸 @{mua.instagram}
+            </a>
+          )}
           <button
             type="button"
             onClick={copyLink}
@@ -157,52 +174,74 @@ function MuaProfile() {
         )}
       </section>
 
-      {/* ---------- PORTOFOLIO ---------- */}
+
+      {/* ---------- VIDEO (ala "Recent Videography") ---------- */}
+      {videos.length > 0 && (
+        <section className="rounded-[2.5rem] bg-ink-800 p-6 sm:p-10">
+          <div className="text-center">
+            <p className="font-display text-5xl italic text-blush-200 sm:text-6xl">Recent</p>
+            <p className="-mt-2 text-4xl font-extrabold uppercase tracking-tight text-blush-50 sm:text-5xl">Videography</p>
+          </div>
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {videos.map(({ media, look }) => (
+              <button key={media.id} type="button" onClick={() => setOpenLook(look)} className="group text-center">
+                {/* Bingkai HP */}
+                <div className="mx-auto overflow-hidden rounded-[1.8rem] border-[6px] border-ink-950 bg-ink-950 shadow-xl shadow-black/50">
+                  <MediaView media={media} preview className="aspect-[9/16] w-full transition duration-500 group-hover:scale-105" />
+                </div>
+                <p className="mt-2 truncate text-sm font-semibold text-blush-50">{look.title}</p>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ---------- LOOKS (ala "Photography Snapshot") ---------- */}
       <section id="portofolio" className="rounded-[2.5rem] bg-wine-950/60 p-6 sm:p-10">
         <div className="text-center">
           <p className="font-display text-5xl italic text-blush-200 sm:text-6xl">Makeup</p>
-          <p className="-mt-2 text-4xl font-extrabold uppercase tracking-tight text-blush-50 sm:text-5xl">Snapshot</p>
+          <p className="-mt-2 text-4xl font-extrabold uppercase tracking-tight text-blush-50 sm:text-5xl">Looks</p>
+          <p className="mt-2 text-sm text-blush-300">Klik look untuk lihat semua foto, model, & produk yang dipakai.</p>
         </div>
-        {mua.photos.length === 0 ? (
-          <p className="mt-6 text-center text-blush-300">Belum ada foto portofolio.</p>
+        {mua.looks.length === 0 ? (
+          <p className="mt-6 text-center text-blush-300">Belum ada portofolio.</p>
         ) : (
           <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {mua.photos.map((photo) => (
+            {mua.looks.map((look) => (
               <button
-                key={photo.id}
+                key={look.id}
                 type="button"
-                onClick={() => setOpenPhoto(photo)}
+                onClick={() => setOpenLook(look)}
                 className="group overflow-hidden rounded-3xl bg-ink-800 p-2 text-left transition hover:bg-ink-700"
               >
-                <div className="aspect-[3/4] overflow-hidden rounded-2xl">
-                  <img
-                    src={photo.image_url}
-                    alt={photo.caption ?? `Portofolio ${mua.name}`}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                <div className="relative aspect-[3/4] overflow-hidden rounded-2xl">
+                  <MediaView
+                    media={look.media[0]}
+                    alt={look.title}
+                    preview
+                    className="h-full w-full transition duration-500 group-hover:scale-105"
                   />
+                  {look.media.length > 1 && (
+                    <span className="glass absolute right-2 top-2 rounded-full px-2 py-0.5 text-[11px] text-blush-50">
+                      +{look.media.length - 1}
+                    </span>
+                  )}
                 </div>
-                <p className="truncate px-2 pb-1 pt-2 text-center text-xs text-blush-200">{photo.caption ?? '✦'}</p>
+                <div className="px-2 pb-1 pt-2">
+                  <p className="truncate text-sm font-semibold text-blush-50">{look.title}</p>
+                  <p className="truncate text-xs text-blush-300">
+                    {[look.model_name, look.products.length ? `${look.products.length} produk` : null]
+                      .filter(Boolean)
+                      .join(' · ') || '✦'}
+                  </p>
+                </div>
               </button>
             ))}
           </div>
         )}
       </section>
 
-      {/* Lightbox: foto diperbesar saat diklik */}
-      {openPhoto && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ink-950/90 p-4 backdrop-blur"
-          onClick={() => setOpenPhoto(null)}
-        >
-          <figure className="max-h-full max-w-3xl">
-            <img src={openPhoto.image_url} alt={openPhoto.caption ?? ''} className="max-h-[85vh] rounded-3xl" />
-            {openPhoto.caption && (
-              <figcaption className="mt-3 text-center font-display text-2xl italic text-blush-100">{openPhoto.caption}</figcaption>
-            )}
-          </figure>
-        </div>
-      )}
+      {openLook && <LookModal look={openLook} onClose={closeLook} />}
     </article>
   )
 }

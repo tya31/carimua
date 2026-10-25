@@ -24,9 +24,28 @@ const demoProfiles = demoMuas.map((m) => {
     category_names: [...m.categories].sort(),
     categories: m.categories.map((name) => ({ id: demoCategoryId[name], name })),
     packages: m.packages.map((p, i) => ({ id: `${m.slug}-pkg-${i}`, ...p })),
-    photos: m.photos.map((p, i) => ({ id: `${m.slug}-photo-${i}`, ...p })),
+    instagram: null,
+    looks: m.looks.map((look, i) => ({
+      id: `${m.slug}-look-${i}`,
+      title: look.title,
+      description: null,
+      model_name: look.model_name,
+      products: look.products,
+      media: look.media.map((media, j) => ({ id: `${m.slug}-look-${i}-${j}`, ...media })),
+    })),
   }
 })
+
+// Ubah baris look dari database ({..., portfolio_photos: [...]}) ke bentuk
+// { id, title, description, model_name, products, media: [{ id, url, type }] }.
+export function normalizeLook({ portfolio_photos = [], ...look }) {
+  return {
+    ...look,
+    media: [...portfolio_photos]
+      .sort((a, b) => a.created_at.localeCompare(b.created_at))
+      .map((m) => ({ id: m.id, url: m.image_url, type: m.media_type })),
+  }
+}
 
 // ---------- Fungsi publik ----------
 
@@ -43,7 +62,7 @@ export async function listLocations() {
   const rows = isDemoMode
     ? demoProfiles
     : await supabase
-        .from('mua_profiles')
+        .from('mua_list')
         .select('city, area')
         .then(({ data, error }) => {
           if (error) throw error
@@ -86,23 +105,26 @@ export async function listMuas({ city, area, category, minPrice, maxPrice } = {}
   return data
 }
 
-// Profil lengkap 1 MUA (bio, kategori, paket, foto). null kalau slug tidak ada.
+// Profil lengkap 1 MUA (bio, kategori, paket, look + foto/video). null kalau slug tidak ada.
 export async function getMuaBySlug(slug) {
   if (isDemoMode) return demoProfiles.find((m) => m.slug === slug) ?? null
 
   const { data, error } = await supabase
     .from('mua_profiles')
-    .select('*, packages(*), portfolio_photos(*), mua_categories(categories(id, name))')
+    .select('*, packages(*), looks(*, portfolio_photos(*)), mua_categories(categories(id, name))')
     .eq('slug', slug)
     .maybeSingle()
   if (error) throw error
   if (!data) return null
 
-  const { packages, portfolio_photos, mua_categories, ...profile } = data
+  const { packages, looks, mua_categories, ...profile } = data
   return {
     ...profile,
     packages: [...packages].sort((a, b) => a.price - b.price),
-    photos: [...portfolio_photos].sort((a, b) => a.created_at.localeCompare(b.created_at)),
+    looks: [...looks]
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .map(normalizeLook)
+      .filter((look) => look.media.length > 0),
     categories: mua_categories.map((mc) => mc.categories),
   }
 }

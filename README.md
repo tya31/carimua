@@ -71,7 +71,8 @@ Buka http://localhost:5173. Tanpa `.env`, website berjalan dalam **mode demo** (
 2. Jalankan file SQL di folder `supabase/` **berurutan**, masing-masing di query baru (salin seluruh isi, tempel, klik **Run**):
    1. `schema.sql`: tabel MUA, paket, foto, RLS, storage
    2. `02_roles.sql`: tabel `profiles` (peran **Klien / MUA**) + trigger akun baru
-3. Cek di **Table Editor**: harus ada 6 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
+   3. `03_looks.sql`: portofolio berbentuk **look** (foto/video, model & produk opsional), Instagram, aturan minimal 2 look agar tampil di pencarian
+3. Cek di **Table Editor**: harus ada 7 tabel. Cek juga **Storage**: harus ada bucket `portfolio`.
 
 ### 3. Isi file `.env`
 1. Salin `.env.example` menjadi `.env` (di folder yang sama).

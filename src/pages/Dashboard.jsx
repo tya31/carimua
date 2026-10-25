@@ -1,22 +1,25 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
+import InstagramLinkCard from '../components/dashboard/InstagramLinkCard.jsx'
+import LooksManager from '../components/dashboard/LooksManager.jsx'
 import PackagesManager from '../components/dashboard/PackagesManager.jsx'
-import PhotosManager from '../components/dashboard/PhotosManager.jsx'
 import ProfileForm from '../components/dashboard/ProfileForm.jsx'
+import { MIN_LOOKS } from '../components/dashboard/ui.js'
+import { normalizeLook } from '../lib/api.js'
 import { supabase } from '../lib/supabase.js'
 
 // Ambil semua data milik MUA yang login. RLS tetap menjaga: walau query ini
 // diubah-ubah, MUA tetap hanya bisa MENGUBAH baris dengan id/mua_id miliknya.
 async function loadDashboard(userId) {
-  const [profile, categories, myCategories, packages, photos] = await Promise.all([
+  const [profile, categories, myCategories, packages, looks] = await Promise.all([
     supabase.from('mua_profiles').select('*').eq('id', userId).maybeSingle(),
     supabase.from('categories').select('id, name').order('id'),
     supabase.from('mua_categories').select('category_id').eq('mua_id', userId),
     supabase.from('packages').select('*').eq('mua_id', userId).order('price'),
-    supabase.from('portfolio_photos').select('*').eq('mua_id', userId).order('created_at'),
+    supabase.from('looks').select('*, portfolio_photos(*)').eq('mua_id', userId).order('created_at'),
   ])
-  const failed = [profile, categories, myCategories, packages, photos].find((r) => r.error)
+  const failed = [profile, categories, myCategories, packages, looks].find((r) => r.error)
   if (failed) throw failed.error
 
   return {
@@ -24,7 +27,7 @@ async function loadDashboard(userId) {
     categories: categories.data,
     categoryIds: myCategories.data.map((r) => r.category_id),
     packages: packages.data,
-    photos: photos.data,
+    looks: looks.data.map(normalizeLook),
   }
 }
 
@@ -49,6 +52,9 @@ function Dashboard() {
   if (error) return <p className="text-wine-300">Gagal memuat dashboard: {error.message}</p>
   if (!data) return <p className="text-blush-300">Memuat…</p>
 
+  const lookCount = data.looks.filter((l) => l.media.length > 0).length
+  const listed = lookCount >= MIN_LOOKS
+
   return (
     <div className="space-y-6">
       <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-wine-800 via-wine-900 to-ink-900 p-7 sm:p-10">
@@ -67,15 +73,24 @@ function Dashboard() {
               Lihat profil publik →
             </Link>
             <span className="glass rounded-full px-5 py-2.5 text-sm text-blush-200">
-              {data.packages.length} paket · {data.photos.length} foto
+              {data.packages.length} paket · {lookCount} look
+            </span>
+            <span
+              className={`rounded-full px-5 py-2.5 text-sm ${
+                listed ? 'bg-emerald-900/40 text-emerald-300' : 'bg-amber-900/30 text-amber-200'
+              }`}
+            >
+              {listed ? '● Tampil di pencarian' : `○ Belum tampil (butuh ${MIN_LOOKS} look)`}
             </span>
           </div>
         )}
       </div>
 
+      {data.profile && <InstagramLinkCard slug={data.profile.slug} />}
+
       <ProfileForm
         // key: form di-reset dengan data terbaru setiap profil tersimpan
-        key={data.profile ? `${data.profile.slug}-${data.profile.avatar_url}` : 'new'}
+        key={data.profile ? `${data.profile.slug}-${data.profile.avatar_url}-${data.profile.instagram}` : 'new'}
         userId={user.id}
         profile={data.profile}
         categories={data.categories}
@@ -85,8 +100,8 @@ function Dashboard() {
 
       {data.profile && (
         <>
+          <LooksManager userId={user.id} looks={data.looks} onChanged={reload} />
           <PackagesManager userId={user.id} packages={data.packages} onChanged={reload} />
-          <PhotosManager userId={user.id} photos={data.photos} onChanged={reload} />
         </>
       )}
     </div>

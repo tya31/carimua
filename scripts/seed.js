@@ -82,7 +82,7 @@ for (const mua of demoMuas) {
   check(profileError, `menyimpan profil ${mua.name}`)
 
   // Hapus data turunan lama, lalu isi ulang.
-  for (const table of ['mua_categories', 'packages', 'portfolio_photos']) {
+  for (const table of ['mua_categories', 'packages', 'portfolio_photos', 'looks']) {
     const { error } = await supabase.from(table).delete().eq('mua_id', id)
     check(error, `membersihkan ${table} ${mua.name}`)
   }
@@ -97,10 +97,20 @@ for (const mua of demoMuas) {
     .insert(mua.packages.map((p) => ({ ...p, mua_id: id })))
   check(pkgError, `menyimpan paket ${mua.name}`)
 
-  const { error: photoError } = await supabase
-    .from('portfolio_photos')
-    .insert(mua.photos.map((p) => ({ ...p, mua_id: id })))
-  check(photoError, `menyimpan foto ${mua.name}`)
+  // Look + file foto/videonya.
+  for (const look of mua.looks) {
+    const { data: lookRow, error: lookError } = await supabase
+      .from('looks')
+      .insert({ mua_id: id, title: look.title, model_name: look.model_name, products: look.products })
+      .select('id')
+      .single()
+    check(lookError, `menyimpan look ${look.title} (sudah menjalankan supabase/03_looks.sql?)`)
+
+    const { error: mediaError } = await supabase.from('portfolio_photos').insert(
+      look.media.map((m) => ({ mua_id: id, look_id: lookRow.id, image_url: m.url, media_type: m.type })),
+    )
+    check(mediaError, `menyimpan foto look ${look.title}`)
+  }
 
   console.log(`✅ ${mua.name}  (login: ${mua.email})`)
 }

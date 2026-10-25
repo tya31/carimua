@@ -7,10 +7,23 @@
 
 export const demoCategories = ['Wedding', 'Wisuda', 'Lamaran', 'Party', 'Photoshoot', 'Hijab']
 
-const photos = (seed, captions) =>
-  captions.map((caption, i) => ({
-    image_url: `https://picsum.photos/seed/${seed}-${i + 1}/600/800`,
-    caption,
+// Contoh produk yang dipakai (opsional di setiap look).
+const PRODUCT_SETS = [
+  ['Estée Lauder Double Wear Foundation', 'Charlotte Tilbury Pillow Talk Lipstick', 'Huda Beauty Faux Mink Lashes'],
+  ['NARS Radiant Creamy Concealer', 'Laura Mercier Translucent Powder', 'Rare Beauty Soft Pinch Blush'],
+  [],
+]
+
+// Tiap judul jadi 1 look berisi 2 foto. Model & produk sengaja diisi sebagian saja (opsional).
+const looks = (seed, titles) =>
+  titles.map((title, i) => ({
+    title,
+    model_name: i % 2 === 0 ? `Model ${String.fromCharCode(65 + i)}` : null,
+    products: PRODUCT_SETS[i % PRODUCT_SETS.length],
+    media: [1, 2].map((n) => ({
+      url: `https://picsum.photos/seed/${seed}-${i + 1}-${n}/600/800`,
+      type: 'image',
+    })),
   }))
 
 export const demoMuas = [
@@ -29,7 +42,7 @@ export const demoMuas = [
       { name: 'Akad Nikah', description: 'Makeup akad + touch up 1x, termasuk bulu mata.', price: 2500000 },
       { name: 'Wedding Full Day', description: 'Akad + resepsi, 2x ganti look, touch up sepanjang acara.', price: 5500000 },
     ],
-    photos: photos('rina', ['Akad adat Sunda', 'Resepsi modern', 'Look lamaran soft', 'Hijab bridal']),
+    looks: looks('rina', ['Akad adat Sunda', 'Resepsi modern', 'Look lamaran soft', 'Hijab bridal']),
   },
   {
     email: 'sasa@carimua.test',
@@ -46,7 +59,7 @@ export const demoMuas = [
       { name: 'Party / Kondangan', description: 'Glam makeup + bulu mata.', price: 550000 },
       { name: 'Photoshoot', description: 'Makeup untuk sesi foto hingga 4 jam, 1x ganti look.', price: 900000 },
     ],
-    photos: photos('sasa', ['Wisuda natural', 'Glam party', 'Editorial photoshoot']),
+    looks: looks('sasa', ['Wisuda natural', 'Glam party', 'Editorial photoshoot']),
   },
   {
     email: 'dewi@carimua.test',
@@ -63,7 +76,7 @@ export const demoMuas = [
       { name: 'Pengantin Adat Jawa', description: 'Paes ageng / solo putri, termasuk sanggul.', price: 4500000 },
       { name: 'Paket Keluarga', description: 'Makeup untuk 2 ibu + 4 keluarga.', price: 3000000 },
     ],
-    photos: photos('dewi', ['Paes ageng', 'Solo putri', 'Makeup ibu pengantin', 'Siraman']),
+    looks: looks('dewi', ['Paes ageng', 'Solo putri', 'Makeup ibu pengantin', 'Siraman']),
   },
   {
     email: 'ayu@carimua.test',
@@ -80,7 +93,7 @@ export const demoMuas = [
       { name: 'Lamaran Hijab', description: 'Makeup + hijab styling + aksesoris.', price: 750000 },
       { name: 'Wedding Hijab', description: 'Akad & resepsi, 2 look hijab.', price: 3500000 },
     ],
-    photos: photos('ayu', ['Hijab wisuda', 'Hijab bridal', 'Hijab lamaran']),
+    looks: looks('ayu', ['Hijab wisuda', 'Hijab bridal', 'Hijab lamaran']),
   },
   {
     email: 'kadek@carimua.test',
@@ -96,7 +109,7 @@ export const demoMuas = [
       { name: 'Pre-wedding Shoot', description: 'Makeup + hairdo, standby 6 jam, 2 look.', price: 2000000 },
       { name: 'Destination Wedding', description: 'Bridal makeup + touch up sampai after party.', price: 6500000 },
     ],
-    photos: photos('kadek', ['Pre-wedding pantai', 'Sunset bridal', 'Party glam', 'Beach wedding']),
+    looks: looks('kadek', ['Pre-wedding pantai', 'Sunset bridal', 'Party glam', 'Beach wedding']),
   },
   {
     email: 'nadia@carimua.test',
@@ -113,7 +126,7 @@ export const demoMuas = [
       { name: 'Wisuda + Hairdo', description: 'Makeup + hairdo/hijab do.', price: 350000 },
       { name: 'Party', description: 'Soft glam + bulu mata.', price: 400000 },
     ],
-    photos: photos('nadia', ['Soft glam wisuda', 'Party look']),
+    looks: looks('nadia', ['Soft glam wisuda', 'Party look']),
   },
   {
     email: 'tiara@carimua.test',
@@ -130,7 +143,7 @@ export const demoMuas = [
       { name: 'Wedding Adat', description: 'Makeup pengantin adat + touch up.', price: 4000000 },
       { name: 'Party', description: 'Makeup glam untuk tamu / keluarga.', price: 500000 },
     ],
-    photos: photos('tiara', ['Adat Batak', 'Adat Melayu', 'International bride']),
+    looks: looks('tiara', ['Adat Batak', 'Adat Melayu', 'International bride']),
   },
   {
     email: 'laras@carimua.test',
@@ -146,6 +159,6 @@ export const demoMuas = [
       { name: 'Wisuda Studio', description: 'Makeup di studio + 5 foto edit.', price: 400000 },
       { name: 'Content Creator', description: 'Makeup untuk shooting konten, 3 jam.', price: 700000 },
     ],
-    photos: photos('laras', ['Konten beauty', 'Wisuda studio', 'Editorial']),
+    looks: looks('laras', ['Konten beauty', 'Wisuda studio', 'Editorial']),
   },
 ]

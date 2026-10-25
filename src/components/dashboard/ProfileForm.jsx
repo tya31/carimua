@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { slugify } from '../../lib/format.js'
+import { normalizeInstagram, slugify } from '../../lib/format.js'
 import { deleteImageByUrl, uploadImage, validateImage } from '../../lib/storage.js'
 import { supabase } from '../../lib/supabase.js'
 import { cardClass, inputClass, labelClass, primaryButton } from './ui.js'
@@ -13,6 +13,7 @@ function ProfileForm({ userId, profile, categories, categoryIds, onSaved }) {
     city: profile?.city ?? '',
     area: profile?.area ?? '',
     whatsapp: profile?.whatsapp ?? '',
+    instagram: profile?.instagram ?? '',
     bio: profile?.bio ?? '',
   })
   // Slug otomatis mengikuti nama, sampai user mengubah slug sendiri.
@@ -53,6 +54,7 @@ function ProfileForm({ userId, profile, categories, categoryIds, onSaved }) {
         city: form.city.trim(),
         area: form.area.trim() || null,
         whatsapp: form.whatsapp.trim() || null,
+        instagram: normalizeInstagram(form.instagram) || null,
         bio: form.bio.trim() || null,
         avatar_url,
       })
@@ -134,6 +136,15 @@ function ProfileForm({ userId, profile, categories, categoryIds, onSaved }) {
             value={form.whatsapp}
             onChange={set('whatsapp')}
             placeholder="0812xxxxxxxx"
+            className={inputClass}
+          />
+        </label>
+        <label className={labelClass}>
+          Instagram
+          <input
+            value={form.instagram}
+            onChange={set('instagram')}
+            placeholder="@usernamekamu"
             className={inputClass}
           />
         </label>
