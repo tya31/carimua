@@ -1,16 +1,51 @@
-import { Link } from 'react-router-dom'
+import { useCallback, useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
+import BookingCard from '../components/BookingCard.jsx'
+import { supabase } from '../lib/supabase.js'
 
-// Halaman "rumah" klien. Booking, jadwal, dan chat diisi di fase berikutnya.
+// Fitur yang menyusul di fase berikutnya.
 const UPCOMING = [
-  { emoji: '📅', title: 'Jadwal & booking', text: 'Semua booking-mu dan tanggalnya, plus pengingat H-2.' },
+  { emoji: '💳', title: 'Bayar DP', text: 'Bayar DP 5% lewat QRIS / VA / e-wallet.' },
   { emoji: '💬', title: 'Chat MUA', text: 'Ngobrol langsung sama MUA yang kamu booking.' },
-  { emoji: '🧾', title: 'Riwayat transaksi', text: 'Catatan DP & pembayaran kamu.' },
+  { emoji: '🔔', title: 'Pengingat H-2', text: 'Notifikasi & email 2 hari sebelum jadwal.' },
 ]
+
+const secondaryButton =
+  'rounded-full border border-wine-400/40 px-4 py-1.5 text-sm text-wine-300 transition hover:bg-wine-900/50'
 
 function ClientHome() {
   const { user, profile } = useAuth()
+  const location = useLocation()
   const firstName = (profile?.full_name || user.email).split(/[ @]/)[0]
+  const [bookings, setBookings] = useState(null)
+  const [error, setError] = useState(null)
+  const [version, setVersion] = useState(0)
+  const reload = useCallback(() => setVersion((v) => v + 1), [])
+
+  useEffect(() => {
+    let ignore = false
+    supabase
+      .from('bookings')
+      .select('*, mua_profiles(name, slug)')
+      .eq('client_id', user.id)
+      .order('event_date')
+      .then(({ data, error: loadError }) => {
+        if (ignore) return
+        if (loadError) setError(loadError.message)
+        else setBookings(data)
+      })
+    return () => {
+      ignore = true
+    }
+  }, [user.id, version])
+
+  async function cancel(booking) {
+    if (!window.confirm('Batalkan booking ini?')) return
+    const { error: updateError } = await supabase.from('bookings').update({ status: 'cancelled' }).eq('id', booking.id)
+    if (updateError) return setError(updateError.message)
+    reload()
+  }
 
   return (
     <div className="space-y-6">
@@ -28,6 +63,41 @@ function ClientHome() {
           Cari MUA →
         </Link>
       </div>
+
+      {location.state?.booked && (
+        <p className="rounded-2xl border border-emerald-400/30 bg-emerald-900/30 p-4 text-sm text-emerald-300">
+          Booking berhasil dibuat 🎉 Statusnya “Menunggu DP” sampai DP 5% dibayar.
+        </p>
+      )}
+
+      <section className="rounded-[2rem] border border-white/10 bg-ink-900/80 p-6 sm:p-8">
+        <h2 className="font-display text-4xl text-blush-50">Booking kamu</h2>
+        {error && <p className="mt-3 text-sm text-wine-300">{error}</p>}
+        {bookings === null ? (
+          <p className="mt-4 text-sm text-blush-300">Memuat…</p>
+        ) : bookings.length === 0 ? (
+          <p className="mt-4 text-sm text-blush-300">
+            Belum ada booking. Buka profil MUA favoritmu lalu klik <span className="text-blush-50">Booking</span>.
+          </p>
+        ) : (
+          <ul className="mt-5 space-y-3">
+            {bookings.map((b) => (
+              <BookingCard
+                key={b.id}
+                booking={b}
+                viewer="client"
+                actions={
+                  b.status === 'pending_payment' && (
+                    <button type="button" onClick={() => cancel(b)} className={secondaryButton}>
+                      Batalkan
+                    </button>
+                  )
+                }
+              />
+            ))}
+          </ul>
+        )}
+      </section>
 
       <div className="grid gap-4 md:grid-cols-3">
         {UPCOMING.map((item) => (

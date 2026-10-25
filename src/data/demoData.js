@@ -162,3 +162,15 @@ export const demoMuas = [
     looks: looks('laras', ['Konten beauty', 'Wisuda studio', 'Editorial']),
   },
 ]
+
+// Titik berangkat (perkiraan pusat area) & tarif transport tiap MUA dummy.
+export const demoTransport = {
+  'rina-makeup': { base_lat: -6.8850, base_lng: 107.6130, base_address: 'Dago, Bandung', transport_rate_per_km: 4000, free_km: 5 },
+  'sasa-beauty': { base_lat: -6.2615, base_lng: 106.8106, base_address: 'Jakarta Selatan', transport_rate_per_km: 5000, free_km: 3 },
+  'dewi-bridal': { base_lat: -7.2640, base_lng: 112.6800, base_address: 'Surabaya Barat', transport_rate_per_km: 4000, free_km: 5 },
+  'ayu-hijab': { base_lat: -7.7160, base_lng: 110.3550, base_address: 'Sleman, Yogyakarta', transport_rate_per_km: 3000, free_km: 5 },
+  'kadek-glam': { base_lat: -8.6910, base_lng: 115.1680, base_address: 'Seminyak, Bali', transport_rate_per_km: 6000, free_km: 0 },
+  'nadia-mua': { base_lat: -6.2250, base_lng: 106.9000, base_address: 'Jakarta Timur', transport_rate_per_km: 3000, free_km: 5 },
+  'tiara-makeup': { base_lat: -3.5952, base_lng: 98.6722, base_address: 'Medan Kota', transport_rate_per_km: 3500, free_km: 5 },
+  'laras-studio': { base_lat: -6.9460, base_lng: 107.6330, base_address: 'Buah Batu, Bandung', transport_rate_per_km: 3000, free_km: 3 },
+}

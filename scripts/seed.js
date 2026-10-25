@@ -7,7 +7,7 @@
 // Aman dijalankan berulang kali: data MUA dummy lama ditimpa, bukan diduplikasi.
 
 import { createClient } from '@supabase/supabase-js'
-import { demoMuas } from '../src/data/demoData.js'
+import { demoMuas, demoTransport } from '../src/data/demoData.js'
 
 const SEED_PASSWORD = 'carimua123'
 const DEMO_CLIENT = { email: 'klien@carimua.test', name: 'Klien Demo' }
@@ -78,6 +78,7 @@ for (const mua of demoMuas) {
     area: mua.area,
     whatsapp: mua.whatsapp,
     avatar_url: mua.avatar_url,
+    ...demoTransport[mua.slug],
   })
   check(profileError, `menyimpan profil ${mua.name}`)
 

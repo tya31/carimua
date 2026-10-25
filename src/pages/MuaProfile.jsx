@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAuth } from '../auth/AuthContext.js'
 import LookModal from '../components/LookModal.jsx'
 import MediaView from '../components/MediaView.jsx'
 import { getMuaBySlug } from '../lib/api.js'
@@ -17,6 +18,7 @@ function SectionTitle({ serif, bold }) {
 function MuaProfile() {
   // :slug di rute /mua/:slug, misalnya /mua/rina-makeup → slug = "rina-makeup"
   const { slug } = useParams()
+  const { role } = useAuth()
   const [result, setResult] = useState({ slug: null, mua: null, error: null })
   const [openLook, setOpenLook] = useState(null)
   const [copied, setCopied] = useState(false)
@@ -110,15 +112,29 @@ function MuaProfile() {
         {/* ---------- KONTAK & LINK ---------- */}
         <section id="kontak" className="glass flex flex-col gap-3 rounded-[2rem] p-6">
           <p className="text-xs uppercase tracking-[0.3em] text-wine-300">let&apos;s talk</p>
+          {role !== 'mua' && (
+            <Link
+              to={`/mua/${mua.slug}/booking`}
+              className="rounded-full bg-wine-gradient px-6 py-3.5 text-center font-semibold text-white shadow-lg shadow-wine-700/40 transition hover:brightness-110"
+            >
+              ✨ Booking sekarang
+            </Link>
+          )}
           {mua.whatsapp && (
             <a
               href={whatsappLink(mua.whatsapp, mua.name)}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full bg-wine-gradient px-6 py-3.5 text-center font-semibold text-white shadow-lg shadow-wine-700/40 transition hover:brightness-110"
+              className="rounded-full border border-white/15 px-6 py-3 text-center text-sm text-blush-100 transition hover:border-wine-400"
             >
               💬 Hubungi via WhatsApp
             </a>
+          )}
+          {mua.transport_rate_per_km > 0 && (
+            <p className="text-center text-xs text-blush-400">
+              Transport {formatRupiah(mua.transport_rate_per_km)}/km
+              {mua.free_km > 0 && ` · gratis ${mua.free_km} km pertama`}
+            </p>
           )}
           {mua.instagram && (
             <a

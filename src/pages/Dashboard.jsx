@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
+import IncomingBookings from '../components/dashboard/IncomingBookings.jsx'
 import InstagramLinkCard from '../components/dashboard/InstagramLinkCard.jsx'
 import LooksManager from '../components/dashboard/LooksManager.jsx'
 import PackagesManager from '../components/dashboard/PackagesManager.jsx'
 import ProfileForm from '../components/dashboard/ProfileForm.jsx'
+import TransportSettings from '../components/dashboard/TransportSettings.jsx'
 import { MIN_LOOKS } from '../components/dashboard/ui.js'
 import { normalizeLook } from '../lib/api.js'
 import { supabase } from '../lib/supabase.js'
@@ -12,14 +14,15 @@ import { supabase } from '../lib/supabase.js'
 // Ambil semua data milik MUA yang login. RLS tetap menjaga: walau query ini
 // diubah-ubah, MUA tetap hanya bisa MENGUBAH baris dengan id/mua_id miliknya.
 async function loadDashboard(userId) {
-  const [profile, categories, myCategories, packages, looks] = await Promise.all([
+  const [profile, categories, myCategories, packages, looks, bookings] = await Promise.all([
     supabase.from('mua_profiles').select('*').eq('id', userId).maybeSingle(),
     supabase.from('categories').select('id, name').order('id'),
     supabase.from('mua_categories').select('category_id').eq('mua_id', userId),
     supabase.from('packages').select('*').eq('mua_id', userId).order('price'),
     supabase.from('looks').select('*, portfolio_photos(*)').eq('mua_id', userId).order('created_at'),
+    supabase.from('bookings').select('*, profiles(full_name)').eq('mua_id', userId).order('event_date'),
   ])
-  const failed = [profile, categories, myCategories, packages, looks].find((r) => r.error)
+  const failed = [profile, categories, myCategories, packages, looks, bookings].find((r) => r.error)
   if (failed) throw failed.error
 
   return {
@@ -28,6 +31,7 @@ async function loadDashboard(userId) {
     categoryIds: myCategories.data.map((r) => r.category_id),
     packages: packages.data,
     looks: looks.data.map(normalizeLook),
+    bookings: bookings.data,
   }
 }
 
@@ -86,6 +90,8 @@ function Dashboard() {
         )}
       </div>
 
+      {data.profile && <IncomingBookings bookings={data.bookings} onChanged={reload} />}
+
       {data.profile && <InstagramLinkCard slug={data.profile.slug} />}
 
       <ProfileForm
@@ -102,6 +108,7 @@ function Dashboard() {
         <>
           <LooksManager userId={user.id} looks={data.looks} onChanged={reload} />
           <PackagesManager userId={user.id} packages={data.packages} onChanged={reload} />
+          <TransportSettings key={`${data.profile.base_lat}-${data.profile.base_lng}`} userId={user.id} profile={data.profile} onSaved={reload} />
         </>
       )}
     </div>

@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import RequireAuth from './auth/RequireAuth.jsx'
 import Container from './components/Container.jsx'
 import Layout from './components/Layout.jsx'
+import BookingPage from './pages/BookingPage.jsx'
 import ChooseRole from './pages/ChooseRole.jsx'
 import ClientHome from './pages/ClientHome.jsx'
 import Dashboard from './pages/Dashboard.jsx'
@@ -36,6 +37,14 @@ function App() {
             }
           />
           <Route path="/mua/:slug" element={<MuaProfile />} />
+          <Route
+            path="/mua/:slug/booking"
+            element={
+              <RequireAuth role="client">
+                <BookingPage />
+              </RequireAuth>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/pilih-peran" element={<ChooseRole />} />
           <Route

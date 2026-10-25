@@ -1,6 +1,6 @@
 // Semua cara website MEMBACA data publik ada di sini.
 // Tiap fungsi punya 2 jalur: Supabase (asli) atau data dummy (mode demo).
-import { demoCategories, demoMuas } from '../data/demoData.js'
+import { demoCategories, demoMuas, demoTransport } from '../data/demoData.js'
 import { isDemoMode, supabase } from './supabase.js'
 
 // ---------- Mode demo: ubah demoData.js jadi bentuk yang sama dengan database ----------
@@ -25,6 +25,7 @@ const demoProfiles = demoMuas.map((m) => {
     categories: m.categories.map((name) => ({ id: demoCategoryId[name], name })),
     packages: m.packages.map((p, i) => ({ id: `${m.slug}-pkg-${i}`, ...p })),
     instagram: null,
+    ...demoTransport[m.slug],
     looks: m.looks.map((look, i) => ({
       id: `${m.slug}-look-${i}`,
       title: look.title,
