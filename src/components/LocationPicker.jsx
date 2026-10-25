@@ -125,11 +125,11 @@ function LocationPicker({ value, onChange, height = 320 }) {
           center={[center.lat, center.lng]}
           zoom={value ? 15 : INDONESIA_CENTER.zoom}
           scrollWheelZoom
-          style={{ height: '100%', width: '100%', background: '#0e0607' }}
+          style={{ height: '100%', width: '100%', background: '#f2efe9' }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           />
           <ClickToPlace onPick={(lat, lng) => pick(lat, lng)} />
           <FlyTo point={flyPoint} />
