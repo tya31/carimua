@@ -37,7 +37,12 @@ function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState(null) // { type: 'error' | 'info', text }
+  // Kalau login Google gagal, Supabase mengembalikan ke sini dengan ?error_description=… (atau di #hash).
+  const [message, setMessage] = useState(() => {
+    const params = new URLSearchParams(location.search || location.hash.slice(1))
+    const desc = params.get('error_description')
+    return desc ? { type: 'error', text: `Login Google gagal: ${desc.replace(/\+/g, ' ')}` } : null
+  }) // { type: 'error' | 'info', text }
 
   // Sudah login → arahkan ke halaman yang tadi dituju, atau ke rumah sesuai peran.
   if (user && !loading) {
