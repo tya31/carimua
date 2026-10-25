@@ -8,6 +8,7 @@ import PackagesManager from '../components/dashboard/PackagesManager.jsx'
 import ProfileForm from '../components/dashboard/ProfileForm.jsx'
 import TransportSettings from '../components/dashboard/TransportSettings.jsx'
 import { MIN_LOOKS } from '../components/dashboard/ui.js'
+import PaymentHistory from '../components/PaymentHistory.jsx'
 import { normalizeLook } from '../lib/api.js'
 import { supabase } from '../lib/supabase.js'
 
@@ -20,7 +21,7 @@ async function loadDashboard(userId) {
     supabase.from('mua_categories').select('category_id').eq('mua_id', userId),
     supabase.from('packages').select('*').eq('mua_id', userId).order('price'),
     supabase.from('looks').select('*, portfolio_photos(*)').eq('mua_id', userId).order('created_at'),
-    supabase.from('bookings').select('*, profiles(full_name)').eq('mua_id', userId).order('event_date'),
+    supabase.from('bookings').select('*, profiles(full_name), payments(*)').eq('mua_id', userId).order('event_date'),
   ])
   const failed = [profile, categories, myCategories, packages, looks, bookings].find((r) => r.error)
   if (failed) throw failed.error
@@ -91,6 +92,8 @@ function Dashboard() {
       </div>
 
       {data.profile && <IncomingBookings bookings={data.bookings} onChanged={reload} />}
+
+      {data.bookings.length > 0 && <PaymentHistory bookings={data.bookings} />}
 
       {data.profile && <InstagramLinkCard slug={data.profile.slug} />}
 

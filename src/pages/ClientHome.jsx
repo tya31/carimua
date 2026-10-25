@@ -2,15 +2,18 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext.js'
 import BookingCard from '../components/BookingCard.jsx'
+import PaymentHistory from '../components/PaymentHistory.jsx'
+import { payDp, paymentsEnabled, syncPayment } from '../lib/payments.js'
 import { supabase } from '../lib/supabase.js'
 
 // Fitur yang menyusul di fase berikutnya.
 const UPCOMING = [
-  { emoji: '💳', title: 'Bayar DP', text: 'Bayar DP 5% lewat QRIS / VA / e-wallet.' },
   { emoji: '💬', title: 'Chat MUA', text: 'Ngobrol langsung sama MUA yang kamu booking.' },
   { emoji: '🔔', title: 'Pengingat H-2', text: 'Notifikasi & email 2 hari sebelum jadwal.' },
 ]
 
+const neutralButton =
+  'rounded-full border border-white/15 px-4 py-1.5 text-sm text-blush-100 transition hover:border-wine-400 disabled:opacity-50'
 const secondaryButton =
   'rounded-full border border-wine-400/40 px-4 py-1.5 text-sm text-wine-300 transition hover:bg-wine-900/50'
 
@@ -21,13 +24,14 @@ function ClientHome() {
   const [bookings, setBookings] = useState(null)
   const [error, setError] = useState(null)
   const [version, setVersion] = useState(0)
+  const [payingId, setPayingId] = useState(null)
   const reload = useCallback(() => setVersion((v) => v + 1), [])
 
   useEffect(() => {
     let ignore = false
     supabase
       .from('bookings')
-      .select('*, mua_profiles(name, slug)')
+      .select('*, mua_profiles(name, slug), payments(*)')
       .eq('client_id', user.id)
       .order('event_date')
       .then(({ data, error: loadError }) => {
@@ -39,6 +43,32 @@ function ClientHome() {
       ignore = true
     }
   }, [user.id, version])
+
+  async function pay(booking) {
+    setError(null)
+    setPayingId(booking.id)
+    try {
+      await payDp(booking.id)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setPayingId(null)
+      reload()
+    }
+  }
+
+  async function checkStatus(booking) {
+    setError(null)
+    setPayingId(booking.id)
+    try {
+      await syncPayment(booking.id)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setPayingId(null)
+      reload()
+    }
+  }
 
   async function cancel(booking) {
     if (!window.confirm('Batalkan booking ini?')) return
@@ -88,18 +118,38 @@ function ClientHome() {
                 viewer="client"
                 actions={
                   b.status === 'pending_payment' && (
-                    <button type="button" onClick={() => cancel(b)} className={secondaryButton}>
-                      Batalkan
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => pay(b)}
+                        disabled={!paymentsEnabled || payingId !== null}
+                        className="rounded-full bg-wine-gradient px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-wine-700/30 transition hover:brightness-110 disabled:opacity-50"
+                      >
+                        {payingId === b.id ? 'Memproses…' : '💳 Bayar DP'}
+                      </button>
+                      {b.payments?.some((p) => p.status === 'pending') && (
+                        <button type="button" onClick={() => checkStatus(b)} disabled={payingId !== null} className={neutralButton}>
+                          Cek status bayar
+                        </button>
+                      )}
+                      <button type="button" onClick={() => cancel(b)} className={secondaryButton}>
+                        Batalkan
+                      </button>
+                    </>
                   )
                 }
               />
             ))}
           </ul>
         )}
+        {!paymentsEnabled && (
+          <p className="mt-4 text-xs text-blush-400">Pembayaran belum aktif (VITE_MIDTRANS_CLIENT_KEY belum diisi).</p>
+        )}
       </section>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      {bookings && bookings.length > 0 && <PaymentHistory bookings={bookings} />}
+
+      <div className="grid gap-4 md:grid-cols-2">
         {UPCOMING.map((item) => (
           <div key={item.title} className="rounded-[2rem] border border-white/10 bg-ink-900/80 p-6">
             <span className="text-3xl">{item.emoji}</span>

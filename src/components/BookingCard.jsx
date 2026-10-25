@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
 import { BOOKING_STATUS, formatDate, formatTime } from '../lib/bookings.js'
 import { formatRupiah } from '../lib/format.js'
+import { formatPaymentType } from '../lib/payments.js'
 
 // Kartu ringkas 1 booking. viewer = 'client' | 'mua' (menentukan siapa "lawan"-nya).
 // actions: tombol tambahan (batal/selesai) dari parent.
 function BookingCard({ booking, viewer, actions }) {
   const status = BOOKING_STATUS[booking.status]
+  const paidPayment = booking.payments?.find((p) => p.status === 'paid')
   const other =
     viewer === 'client'
       ? { name: booking.mua_profiles?.name, link: `/mua/${booking.mua_profiles?.slug}` }
@@ -54,6 +56,13 @@ function BookingCard({ booking, viewer, actions }) {
           <dd className="font-semibold text-wine-300">{formatRupiah(booking.dp_amount)}</dd>
         </div>
       </dl>
+
+      {paidPayment && (
+        <p className="mt-3 text-xs text-emerald-300">
+          ✓ DP lunas via {formatPaymentType(paidPayment.payment_type)} ·{' '}
+          {new Date(paidPayment.paid_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+        </p>
+      )}
 
       {actions && <div className="mt-4 flex flex-wrap gap-2">{actions}</div>}
     </li>
